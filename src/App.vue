@@ -1,30 +1,23 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import Navbar from './components/Navbar.vue'
+import Hero from './components/Hero.vue'
+import Stats from './components/Stats.vue'
+import PrincipalMessage from './components/PrincipalMessage.vue'
+import News from './components/News.vue'
+import VideoProfile from './components/VideoProfile.vue'
+import QuickAccess from './components/QuickAccess.vue'
+import Footer from './components/Footer.vue'
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="min-h-screen">
+    <Navbar />
+    <Hero />
+    <Stats />
+    <PrincipalMessage />
+    <News />
+    <VideoProfile />
+    <QuickAccess />
+    <Footer />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
