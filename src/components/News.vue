@@ -1,4 +1,9 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const currentIndex = ref(0)
+let autoScrollInterval = null
+
 const newsArticles = [
     {
         id: 1,
@@ -28,6 +33,24 @@ const newsArticles = [
         categoryColor: 'bg-purple-500'
     }
 ]
+
+const scrollToNext = () => {
+    currentIndex.value = (currentIndex.value + 1) % newsArticles.length
+}
+
+const scrollToPrev = () => {
+    currentIndex.value = currentIndex.value === 0 ? newsArticles.length - 1 : currentIndex.value - 1
+}
+
+onMounted(() => {
+    autoScrollInterval = setInterval(scrollToNext, 5000)
+})
+
+onUnmounted(() => {
+    if (autoScrollInterval) {
+        clearInterval(autoScrollInterval)
+    }
+})
 </script>
 
 <template>
@@ -81,8 +104,8 @@ const newsArticles = [
 
             <!-- Pagination -->
             <div class="flex justify-center items-center gap-3">
-                <button
-                    class="px-4 py-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center">
+                <button @click="scrollToPrev"
+                    class="px-4 py-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center cursor-pointer">
                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
@@ -90,16 +113,16 @@ const newsArticles = [
                 </button>
 
                 <div class="flex items-center gap-2">
-                    <button class="w-10 h-10 bg-primary text-white rounded-lg font-semibold">1</button>
+                    <button class="w-10 h-10 bg-primary text-white rounded-lg font-semibold cursor-pointer">1</button>
                 </div>
 
                 <button
-                    class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center font-semibold">
+                    class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center font-semibold cursor-pointer">
                     Lihat Semua Berita
                 </button>
 
-                <button
-                    class="px-4 py-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center">
+                <button @click="scrollToNext"
+                    class="px-4 py-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center cursor-pointer">
                     Selanjutnya
                     <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
