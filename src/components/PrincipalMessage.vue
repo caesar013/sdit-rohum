@@ -17,7 +17,7 @@
                 <!-- Principal Photo -->
                 <div class="flex justify-center -mt-24 mb-8">
                     <div
-                        class="w-40 h-40 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gradient-to-br from-primary to-primary-light">
+                        class="w-40 h-40 rounded-full border-4 border-white shadow-xl overflow-hidden bg-linear-to-br from-primary to-primary-light">
                         <!-- <img src="/principal-photo.jpg" alt="Kepala Sekolah" class="w-full h-full object-cover" -->
                         <img src="" alt="Kepala Sekolah" class="w-full h-full object-cover"
                             @error="$event.target.src = 'https://ui-avatars.com/api/?name=Kepala+Sekolah&size=400&background=0d5f5f&color=fff&bold=true'" />

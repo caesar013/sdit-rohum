@@ -44,7 +44,7 @@ const navLinks = [
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
-        <div class="flex-shrink-0">
+        <div class="shrink-0">
           <router-link to="/" class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
               SD

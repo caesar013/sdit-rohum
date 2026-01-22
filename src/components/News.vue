@@ -72,7 +72,7 @@ onUnmounted(() => {
                 <article v-for="article in newsArticles" :key="article.id"
                     class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                     <!-- Article Image -->
-                    <div class="relative h-48 bg-gradient-to-br from-primary-light to-primary overflow-hidden">
+                    <div class="relative h-48 bg-linear-to-br from-primary-light to-primary overflow-hidden">
                         <img :src="article.image" :alt="article.title" class="w-full h-full object-cover"
                             @error="$event.target.src = 'https://placehold.co/600x400/14b8a6/white?text=SD+Kedungrejo'" />
                         <div

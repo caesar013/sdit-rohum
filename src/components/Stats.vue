@@ -28,7 +28,7 @@ const stats = [
         <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div v-for="stat in stats" :key="stat.label"
-                    :class="`bg-gradient-to-br ${stat.color} rounded-2xl p-8 text-center text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2`">
+                    :class="`bg-linear-to-br ${stat.color} rounded-2xl p-8 text-center text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2`">
                     <div class="text-5xl font-bold mb-3">{{ stat.value }}</div>
                     <div class="text-lg font-medium opacity-90">{{ stat.label }}</div>
                     <div class="mt-4 w-full h-1 bg-white/30 rounded-full">

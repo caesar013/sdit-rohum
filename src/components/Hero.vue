@@ -8,7 +8,7 @@ const images = [
 </script>
 
 <template>
-  <section class="bg-linear-to-br from-primary to-primary-dark min-h-[600px] px-4 py-16 relative overflow-hidden">
+  <section class="bg-linear-to-br from-primary to-primary-dark min-h-150 px-4 py-16 relative overflow-hidden">
     <div class="max-w-7xl mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <!-- Left Content -->
