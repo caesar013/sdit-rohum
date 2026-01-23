@@ -46,7 +46,7 @@ const router = createRouter({
     {
       path: "/guru-tendik",
       name: "GuruTendik",
-      //   component: () => import('../views/GuruTendik.vue')
+        component: () => import('../views/GuruTendik.vue')
     },
     {
       path: "/pd-non-aktif",

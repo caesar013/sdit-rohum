@@ -278,7 +278,7 @@ const handleImageError = (event) => {
                     <div class="flex flex-col md:flex-row gap-4">
 
                         <!-- Search Bar -->
-                        <div class="flex-grow">
+                        <div class="grow">
                             <div class="relative">
                                 <MagnifyingGlassIcon
                                     class="w-5 h-5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -482,7 +482,7 @@ const handleImageError = (event) => {
                             <div class="md:col-span-2">
                                 <div class="relative">
                                     <div
-                                        class="aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border-4 border-primary/20">
+                                        class="aspect-3/4 rounded-2xl overflow-hidden shadow-xl border-4 border-primary/20">
                                         <img :src="selectedTeacher.photo" :alt="selectedTeacher.name"
                                             @error="handleImageError" class="w-full h-full object-cover" />
                                     </div>
