@@ -51,7 +51,7 @@ const router = createRouter({
     {
       path: "/pd-non-aktif",
       name: "PDNonAktif",
-      //   component: () => import('../views/PDNonAktif.vue')
+        component: () => import('../views/PDNonAktif.vue')
     },
     {
       path: "/galeri-foto",
