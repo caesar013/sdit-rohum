@@ -21,17 +21,22 @@ const router = createRouter({
     {
       path: "/akreditasi",
       name: "Akreditasi",
-      //   component: () => import('../views/Akreditasi.vue')
+      component: () => import("../views/Akreditasi.vue"),
     },
     {
       path: "/sarana-prasarana",
       name: "SaranaPrasarana",
-      //   component: () => import('../views/SaranaPrasarana.vue')
+      component: () => import("../views/SaranaPrasarana.vue"),
     },
     {
       path: "/berita",
       name: "Berita",
-      //   component: () => import('../views/Berita.vue')
+      component: () => import("../views/Berita.vue"),
+    },
+    {
+      path: "/berita/:slug",
+      name: "BeritaDetail",
+      component: () => import("../views/BeritaDetail.vue"),
     },
     {
       path: "/peserta-didik",
