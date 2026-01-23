@@ -41,7 +41,7 @@ const router = createRouter({
     {
       path: "/peserta-didik",
       name: "PesertaDidik",
-      //   component: () => import('../views/PesertaDidik.vue')
+        component: () => import('../views/PesertaDidik.vue')
     },
     {
       path: "/guru-tendik",
