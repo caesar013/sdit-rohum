@@ -76,7 +76,7 @@ const historyData = ref({
 <template>
     <div class="min-h-screen bg-neutral-50">
         <!-- Hero Section -->
-        <section class="bg-gradient-to-br from-primary to-primary-dark py-20 px-4">
+        <section class="bg-linear-to-br from-primary to-primary-dark py-20 px-4">
             <div class="max-w-4xl mx-auto text-center">
                 <!-- Breadcrumb -->
                 <div
@@ -105,7 +105,7 @@ const historyData = ref({
             <div class="max-w-5xl mx-auto">
                 <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 mb-12">
                     <div class="flex items-start space-x-4 mb-6">
-                        <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0">
                             <BookOpenIcon class="w-10 h-10 text-primary" />
                         </div>
                         <div>
@@ -170,7 +170,7 @@ const historyData = ref({
                                 <!-- Mobile Layout -->
                                 <div class="md:hidden flex items-start gap-4">
                                     <div
-                                        class="w-16 h-16 bg-linear-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center shadow-xl flex-shrink-0">
+                                        class="w-16 h-16 bg-linear-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center shadow-xl shrink-0">
                                         <span class="text-white font-bold text-sm">{{ item.year }}</span>
                                     </div>
                                     <div class="bg-white rounded-2xl shadow-lg p-6 flex-1">

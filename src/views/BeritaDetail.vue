@@ -154,7 +154,7 @@ const handleImageError = (event) => {
                     </div>
 
                     <!-- Featured Image -->
-                    <div class="relative w-full h-96 md:h-[500px] overflow-hidden">
+                    <div class="relative w-full h-96 md:h-125 overflow-hidden">
                         <img :src="article.image" :alt="article.title" @error="handleImageError"
                             class="w-full h-full object-cover" />
                     </div>
@@ -239,7 +239,7 @@ const handleImageError = (event) => {
                                     </div>
 
                                     <!-- Comment Content -->
-                                    <div class="flex-grow">
+                                    <div class="grow">
                                         <div class="bg-neutral-50 rounded-xl p-4">
                                             <div class="flex items-center gap-3 mb-2">
                                                 <h4 class="font-bold text-neutral-900">{{ comment.name }}</h4>
