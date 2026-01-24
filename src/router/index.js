@@ -56,12 +56,12 @@ const router = createRouter({
     {
       path: "/galeri-foto",
       name: "GaleriFoto",
-      //   component: () => import('../views/GaleriFoto.vue')
+        component: () => import('../views/GaleriFoto.vue')
     },
     {
       path: "/galeri-video",
       name: "GaleriVideo",
-      //   component: () => import('../views/GaleriVideo.vue')
+        component: () => import('../views/GaleriVideo.vue')
     },
     {
       path: "/unduhan",
