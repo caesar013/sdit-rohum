@@ -58,7 +58,7 @@ const schoolData = ref({
 <template>
     <div class="min-h-screen bg-neutral-50">
         <!-- Hero Section -->
-        <section class="bg-gradient-to-br from-primary to-primary-dark py-20 px-4">
+        <section class="bg-linear-to-br from-primary to-primary-dark py-20 px-4">
             <div class="max-w-4xl mx-auto text-center">
                 <!-- Breadcrumb -->
                 <div
@@ -88,7 +88,7 @@ const schoolData = ref({
                 <!-- School Identity Card -->
                 <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
                     <!-- Header -->
-                    <div class="bg-gradient-to-r from-primary to-primary-dark p-8 text-white">
+                    <div class="bg-linear-to-r from-primary to-primary-dark p-8 text-white">
                         <div class="flex items-center space-x-4">
                             <div
                                 class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
@@ -107,7 +107,7 @@ const schoolData = ref({
                             <!-- Principal -->
                             <div class="flex items-start space-x-4">
                                 <div
-                                    class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                                     <UserIcon class="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
@@ -120,7 +120,7 @@ const schoolData = ref({
                             <!-- Address -->
                             <div class="flex items-start space-x-4">
                                 <div
-                                    class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                                     <MapPinIcon class="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
@@ -138,7 +138,7 @@ const schoolData = ref({
                             <!-- Contact -->
                             <div class="flex items-start space-x-4">
                                 <div
-                                    class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                                     <PhoneIcon class="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
@@ -152,7 +152,7 @@ const schoolData = ref({
                             <!-- Email & Website -->
                             <div class="flex items-start space-x-4">
                                 <div
-                                    class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
                                     <EnvelopeIcon class="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
@@ -183,7 +183,7 @@ const schoolData = ref({
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Status -->
-                                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
+                                <div class="bg-linear-to-br from-blue-50 to-blue-100 rounded-xl p-6">
                                     <p class="text-sm font-semibold text-blue-700 uppercase mb-2">
                                         {{ schoolData.additionalInfo.status.label }}
                                     </p>
@@ -193,7 +193,7 @@ const schoolData = ref({
                                 </div>
 
                                 <!-- Accreditation -->
-                                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
+                                <div class="bg-linear-to-br from-green-50 to-green-100 rounded-xl p-6">
                                     <p class="text-sm font-semibold text-green-700 uppercase mb-2">
                                         {{ schoolData.additionalInfo.accreditation.label }}
                                     </p>
@@ -203,7 +203,7 @@ const schoolData = ref({
                                 </div>
 
                                 <!-- Year Established -->
-                                <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6">
+                                <div class="bg-linear-to-br from-amber-50 to-amber-100 rounded-xl p-6">
                                     <p class="text-sm font-semibold text-amber-700 uppercase mb-2">
                                         {{ schoolData.additionalInfo.established.label }}
                                     </p>

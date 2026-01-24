@@ -71,7 +71,7 @@ const router = createRouter({
     {
       path: "/hubungi-kami",
       name: "HubungiKami",
-      //   component: () => import('../views/HubungiKami.vue')
+        component: () => import('../views/HubungiKami.vue')
     },
   ],
   scrollBehavior(to, from, savedPosition) {

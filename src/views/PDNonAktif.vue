@@ -249,7 +249,7 @@ const handleImageError = (event) => {
                     <div class="flex flex-col md:flex-row gap-4">
 
                         <!-- Search Bar -->
-                        <div class="flex-grow">
+                        <div class="grow">
                             <div class="relative">
                                 <MagnifyingGlassIcon
                                     class="w-5 h-5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -320,7 +320,7 @@ const handleImageError = (event) => {
                             </div>
 
                             <!-- Alumni Info -->
-                            <div class="flex-grow">
+                            <div class="grow">
                                 <h3 class="text-xl font-bold text-neutral-900 mb-4">
                                     {{ alumni.name }}
                                 </h3>
