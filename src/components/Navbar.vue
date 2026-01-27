@@ -34,7 +34,6 @@ const navLinks = [
       { name: 'Video', href: '/galeri-video' },
     ]
   },
-  { name: 'Unduhan', href: '/unduhan' },
   { name: 'Hubungi Kami', href: '/hubungi-kami' },
 ]
 </script>

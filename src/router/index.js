@@ -64,11 +64,6 @@ const router = createRouter({
         component: () => import('../views/GaleriVideo.vue')
     },
     {
-      path: "/unduhan",
-      name: "Unduhan",
-      //   component: () => import('../views/Unduhan.vue')
-    },
-    {
       path: "/hubungi-kami",
       name: "HubungiKami",
         component: () => import('../views/HubungiKami.vue')
