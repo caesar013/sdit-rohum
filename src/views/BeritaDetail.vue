@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
     HomeIcon,
@@ -11,61 +11,20 @@ import {
     ShareIcon,
     ChatBubbleLeftIcon
 } from '@heroicons/vue/24/outline'
+import { getNewsBySlug, getNews } from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
 
-// Article data - will be fetched from backend based on route.params.slug
-const article = ref({
-    id: 2,
-    title: 'Serunya Outing Class SD Negeri Kedungrejo ke Yogyakarta: Belajar Sambil Berwisata!',
-    slug: 'outing-class-yogyakarta',
-    date: 'Senin, 27 Oktober 2025',
-    author: 'SDN Kedungrejo Pengasih',
-    views: 426,
-    image: '/placeholder-news-outing.jpg',
-    content: `
-    <p>Sabtu, 25 Oktober 2025 menjadi hari penuh keceriaan bagi siswa SD Negeri Kedungrejo Kapanewon Pengasih. Hari itu, para siswa mengikuti <strong>Outing Class</strong> ke Yogyakarta, sebuah kegiatan belajar sambil berwisata yang menghadirkan pengalaman berbeda dari pelajaran di kelas.</p>
-    
-    <p>Rombongan berangkat <strong>pagi-pagi dari Stasiun Wates pukul 08.01</strong> menggunakan <strong>Kereta Api Bandara</strong>. Suasana di gerbong dipenuhi tawa dan antusiasme anak-anak, sambil belajar mengenal cara naik kereta dan aturan keselamatan dari <strong>petugas KAI Stasiun Tugu</strong>. Berkat bimbingan petugas, pulangnya rombongan bisa nyaman <strong>satu gerbong penuh bersama</strong>.</p>
-    
-    <p>Setibanya di Yogyakarta, petualangan edukatif dimulai. Destinasi pertama adalah <strong>Taman Pintar</strong>, di mana siswa diajak belajar sains secara seru di <strong>Gedung Oval dan Kotak</strong>. Mereka mencoba eksperimen, menyaksikan atraksi interaktif, dan belajar sambil bermain.</p>
-    
-    <p>Salah satu peserta didik, <strong>Adha Adi Gama</strong>, juga berbagi keseruan, <em>"Seru banget! Bisa naik kereta, main di Taman Pintar, dan lihat Benteng Vredeburg. Belajar jadi lebih asik karena bisa langsung dicoba sendiri!"</em></p>
-    
-    <p>Setelah seharlan penuh belajar dan bermain, rombongan kembali ke <strong>Stasiun Wates pukul 16.07</strong>, membawa pulang pengalaman baru yang berkesan. Outing Class ini membuktikan bahwa <strong>belajar tidak harus selalu di kelas—tapi bisa sambil berpetualang!</strong></p>
-  `,
-    tags: ['Berita', '2025', 'Pembelajaran']
-})
+// Article data
+const article = ref(null)
+const isLoading = ref(true)
 
-// Comments - will be fetched from backend
-const comments = ref([
-    {
-        id: 1,
-        name: 'Sumardi',
-        date: '1 bulan yang lalu',
-        avatar: 'S',
-        comment: 'Saya sangat berkerja keras Adi guru'
-    }
-])
+// Comments - will be implemented later
+const comments = ref([])
 
-// Related news - will be fetched from backend
-const relatedNews = ref([
-    {
-        id: 1,
-        title: 'ANBK Utama SD Negeri Kedungrejo Berjalan Lancar, Hari Kedua Sempat Mengalami Penundaan Teknis',
-        image: '/placeholder-related-1.jpg',
-        date: '25 Sep 2025',
-        slug: 'anbk-utama-2025'
-    },
-    {
-        id: 2,
-        title: 'PPDB 2021/2022',
-        image: '/placeholder-related-2.jpg',
-        date: '15 Jun 2021',
-        slug: 'ppdb-2021-2022'
-    }
-])
+// Related news
+const relatedNews = ref([])
 
 // Comment form
 const commentForm = ref({
@@ -74,9 +33,55 @@ const commentForm = ref({
     comment: ''
 })
 
-// Functions - will be implemented when backend is ready
+// Fetch article by slug
+const fetchArticle = async () => {
+    isLoading.value = true
+    try {
+        const response = await getNewsBySlug(route.params.slug)
+
+        if (response.success) {
+            article.value = response.data
+            // Fetch related news
+            await fetchRelatedNews()
+        } else {
+            // Article not found, redirect to news page
+            router.push('/berita')
+        }
+    } catch (error) {
+        console.error('Error fetching article:', error)
+        router.push('/berita')
+    } finally {
+        isLoading.value = false
+    }
+}
+
+// Fetch related news
+const fetchRelatedNews = async () => {
+    try {
+        const response = await getNews({
+            limit: 3,
+            status: 'published'
+        })
+
+        if (response.success) {
+            // Filter out current article
+            relatedNews.value = response.data.filter(news => news.id !== article.value.id)
+        }
+    } catch (error) {
+        console.error('Error fetching related news:', error)
+    }
+}
+
+// Functions
 const goBack = () => {
     router.push('/berita')
+}
+
+const goToNewsDetail = (slug) => {
+    router.push(`/berita/${slug}`)
+    // Scroll to top and refetch
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    fetchArticle()
 }
 
 const submitComment = () => {
@@ -91,13 +96,41 @@ const submitComment = () => {
 }
 
 const shareArticle = (platform) => {
-    // TODO: Implement share functionality
-    console.log('Sharing to:', platform)
+    const url = window.location.href
+    const text = article.value.title
+
+    let shareUrl = ''
+    switch (platform) {
+        case 'facebook':
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+            break
+        case 'twitter':
+            shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`
+            break
+        case 'whatsapp':
+            shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`
+            break
+    }
+
+    if (shareUrl) {
+        window.open(shareUrl, '_blank', 'width=600,height=400')
+    }
 }
 
 const handleImageError = (event) => {
     event.target.src = 'https://via.placeholder.com/1200x600/0d5f5f/ffffff?text=Berita+Sekolah'
 }
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }
+    return date.toLocaleDateString('id-ID', options)
+}
+
+// Fetch article on mount
+onMounted(() => {
+    fetchArticle()
+})
 </script>
 
 <template>

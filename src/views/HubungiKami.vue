@@ -1,11 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
     PhoneIcon,
     EnvelopeIcon,
     MapPinIcon,
     PaperAirplaneIcon
 } from '@heroicons/vue/24/outline'
+import { submitContact, getSchoolProfileByKey } from '@/services/api'
 
 // Contact information - will be fetched from backend
 const contactInfo = ref({
@@ -28,30 +29,58 @@ const socialMedia = ref({
 const contactForm = ref({
     name: '',
     email: '',
+    subject: '',
     message: ''
 })
 
 // Form submission status
 const isSubmitting = ref(false)
+const submitSuccess = ref(false)
 
-// Functions - will be implemented when backend is ready
+// Fetch contact information from backend
+const fetchContactInfo = async () => {
+    try {
+        // Fetch contact info from school profile
+        const phoneResponse = await getSchoolProfileByKey('contact_phone')
+        const emailResponse = await getSchoolProfileByKey('contact_email')
+        const addressResponse = await getSchoolProfileByKey('contact_address')
+        const mapResponse = await getSchoolProfileByKey('map_embed_url')
+
+        if (phoneResponse.success) contactInfo.value.whatsapp = phoneResponse.data.value
+        if (emailResponse.success) contactInfo.value.email = emailResponse.data.value
+        if (addressResponse.success) {
+            contactInfo.value.fullAddress = addressResponse.data.value
+            contactInfo.value.address = addressResponse.data.value
+        }
+        if (mapResponse.success) contactInfo.value.mapEmbedUrl = mapResponse.data.value
+    } catch (error) {
+        console.error('Error fetching contact info:', error)
+        // Keep default values on error
+    }
+}
+
+// Functions
 const submitContactForm = async () => {
-    // TODO: Submit contact form to backend API
     isSubmitting.value = true
+    submitSuccess.value = false
 
     try {
-        console.log('Submitting contact form:', contactForm.value)
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        const response = await submitContact(contactForm.value)
 
-        // Reset form after successful submission
-        contactForm.value = {
-            name: '',
-            email: '',
-            message: ''
+        if (response.success) {
+            // Reset form after successful submission
+            contactForm.value = {
+                name: '',
+                email: '',
+                subject: '',
+                message: ''
+            }
+
+            submitSuccess.value = true
+            alert('Pesan Anda telah terkirim. Kami akan segera menghubungi Anda.')
+        } else {
+            alert('Terjadi kesalahan. Silakan coba lagi.')
         }
-
-        alert('Pesan Anda telah terkirim. Kami akan segera menghubungi Anda.')
     } catch (error) {
         console.error('Error submitting form:', error)
         alert('Terjadi kesalahan. Silakan coba lagi.')
@@ -61,11 +90,12 @@ const submitContactForm = async () => {
 }
 
 const openWhatsApp = () => {
-    window.open(`https://wa.me/${contactInfo.value.whatsapp}`, '_blank')
+    const phone = contactInfo.value.whatsapp.replace(/\D/g, '')
+    window.open(`https://wa.me/${phone}`, '_blank')
 }
 
 const openGoogleMaps = () => {
-    window.open('https://maps.google.com/?q=SD+Negeri+Kedungrejo', '_blank')
+    window.open('https://maps.google.com/?q=' + encodeURIComponent(contactInfo.value.fullAddress), '_blank')
 }
 
 const openSocialMedia = (platform) => {
@@ -73,6 +103,11 @@ const openSocialMedia = (platform) => {
         window.open(socialMedia.value[platform], '_blank')
     }
 }
+
+// Fetch contact info on mount
+onMounted(() => {
+    fetchContactInfo()
+})
 </script>
 
 <template>
