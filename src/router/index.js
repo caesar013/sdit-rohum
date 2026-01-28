@@ -41,32 +41,32 @@ const router = createRouter({
     {
       path: "/peserta-didik",
       name: "PesertaDidik",
-        component: () => import('../views/PesertaDidik.vue')
+      component: () => import("../views/PesertaDidik.vue"),
     },
     {
       path: "/guru-tendik",
       name: "GuruTendik",
-        component: () => import('../views/GuruTendik.vue')
+      component: () => import("../views/GuruTendik.vue"),
     },
     {
       path: "/pd-non-aktif",
       name: "PDNonAktif",
-        component: () => import('../views/PDNonAktif.vue')
+      component: () => import("../views/PDNonAktif.vue"),
     },
     {
       path: "/galeri-foto",
       name: "GaleriFoto",
-        component: () => import('../views/GaleriFoto.vue')
+      component: () => import("../views/GaleriFoto.vue"),
     },
     {
       path: "/galeri-video",
       name: "GaleriVideo",
-        component: () => import('../views/GaleriVideo.vue')
+      component: () => import("../views/GaleriVideo.vue"),
     },
     {
       path: "/hubungi-kami",
       name: "HubungiKami",
-        component: () => import('../views/HubungiKami.vue')
+      component: () => import("../views/HubungiKami.vue"),
     },
   ],
   scrollBehavior(to, from, savedPosition) {

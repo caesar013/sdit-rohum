@@ -1,17 +1,17 @@
-import axios from 'axios';
+import axios from "axios";
 
 // Create axios instance with base URL
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Request interceptor to add auth token if available
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -19,7 +19,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor to handle errors globally
@@ -29,18 +29,18 @@ api.interceptors.response.use(
     if (error.response) {
       // Handle 401 Unauthorized
       if (error.response.status === 401) {
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
         // Optionally redirect to login page
       }
       return Promise.reject(error.response.data);
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // ==================== SCHOOL PROFILE ====================
 export const getSchoolProfile = async () => {
-  return api.get('/school-profile');
+  return api.get("/school-profile");
 };
 
 export const getSchoolProfileByKey = async (key) => {
@@ -49,7 +49,7 @@ export const getSchoolProfileByKey = async (key) => {
 
 // ==================== NEWS ====================
 export const getNews = async (params = {}) => {
-  return api.get('/news', { params });
+  return api.get("/news", { params });
 };
 
 export const getNewsBySlug = async (slug) => {
@@ -61,12 +61,12 @@ export const getNewsById = async (id) => {
 };
 
 export const getNewsCategories = async () => {
-  return api.get('/news/categories');
+  return api.get("/news/categories");
 };
 
 // ==================== VIDEOS ====================
 export const getVideos = async (params = {}) => {
-  return api.get('/videos', { params });
+  return api.get("/videos", { params });
 };
 
 export const getVideoById = async (id) => {
@@ -74,12 +74,12 @@ export const getVideoById = async (id) => {
 };
 
 export const getVideoCategories = async () => {
-  return api.get('/videos/categories');
+  return api.get("/videos/categories");
 };
 
 // ==================== PHOTO GALLERIES ====================
 export const getGalleryAlbums = async (params = {}) => {
-  return api.get('/gallery', { params });
+  return api.get("/gallery", { params });
 };
 
 export const getGalleryAlbum = async (id) => {
@@ -88,12 +88,12 @@ export const getGalleryAlbum = async (id) => {
 
 // ==================== CONTACT ====================
 export const submitContact = async (data) => {
-  return api.post('/contact', data);
+  return api.post("/contact", data);
 };
 
 // ==================== TEACHERS ====================
 export const getTeachers = async (params = {}) => {
-  return api.get('/teachers', { params });
+  return api.get("/teachers", { params });
 };
 
 export const getTeacherById = async (id) => {
@@ -101,12 +101,12 @@ export const getTeacherById = async (id) => {
 };
 
 export const getTeacherStatuses = async () => {
-  return api.get('/teachers/statuses');
+  return api.get("/teachers/statuses");
 };
 
 // ==================== FACILITIES ====================
 export const getFacilities = async (params = {}) => {
-  return api.get('/facilities', { params });
+  return api.get("/facilities", { params });
 };
 
 export const getFacilityById = async (id) => {
@@ -114,16 +114,16 @@ export const getFacilityById = async (id) => {
 };
 
 export const getFacilityCategories = async () => {
-  return api.get('/facilities/categories');
+  return api.get("/facilities/categories");
 };
 
 export const getFacilityConditions = async () => {
-  return api.get('/facilities/conditions');
+  return api.get("/facilities/conditions");
 };
 
 // ==================== ACHIEVEMENTS ====================
 export const getAchievements = async (params = {}) => {
-  return api.get('/achievements', { params });
+  return api.get("/achievements", { params });
 };
 
 export const getAchievementById = async (id) => {
@@ -131,20 +131,20 @@ export const getAchievementById = async (id) => {
 };
 
 export const getAchievementCategories = async () => {
-  return api.get('/achievements/categories');
+  return api.get("/achievements/categories");
 };
 
 export const getAchievementLevels = async () => {
-  return api.get('/achievements/levels');
+  return api.get("/achievements/levels");
 };
 
 // ==================== ACADEMIC YEARS ====================
 export const getAcademicYears = async () => {
-  return api.get('/academic-years');
+  return api.get("/academic-years");
 };
 
 export const getActiveAcademicYear = async () => {
-  return api.get('/academic-years/active');
+  return api.get("/academic-years/active");
 };
 
 export const getAcademicYearById = async (id) => {
@@ -153,7 +153,7 @@ export const getAcademicYearById = async (id) => {
 
 // ==================== STUDENTS ====================
 export const getStudents = async (params = {}) => {
-  return api.get('/students', { params });
+  return api.get("/students", { params });
 };
 
 export const getStudentById = async (id) => {
@@ -165,12 +165,12 @@ export const getStudentEnrollmentHistory = async (id) => {
 };
 
 export const getStudentStatuses = async () => {
-  return api.get('/students/statuses');
+  return api.get("/students/statuses");
 };
 
 // ==================== ALUMNI ====================
 export const getAlumni = async (params = {}) => {
-  return api.get('/alumni', { params });
+  return api.get("/alumni", { params });
 };
 
 export const getAlumniById = async (id) => {
@@ -178,17 +178,17 @@ export const getAlumniById = async (id) => {
 };
 
 export const getAlumniGraduationYears = async () => {
-  return api.get('/alumni/graduation-years');
+  return api.get("/alumni/graduation-years");
 };
 
 export const getAlumniStatuses = async () => {
-  return api.get('/alumni/statuses');
+  return api.get("/alumni/statuses");
 };
 
 export const registerAlumni = async (formData) => {
-  return api.post('/alumni', formData, {
+  return api.post("/alumni", formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
+      "Content-Type": "multipart/form-data",
     },
   });
 };
