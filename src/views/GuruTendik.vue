@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import {
     MagnifyingGlassIcon,
     UserGroupIcon,
@@ -7,18 +7,18 @@ import {
     ChevronRightIcon,
     XMarkIcon
 } from '@heroicons/vue/24/outline'
+import { getTeachers } from '@/services/api'
 
 // Modal state
 const showModal = ref(false)
 const selectedTeacher = ref(null)
 
-// Status options
+// Status options (based on API documentation)
 const statusOptions = ref([
     { value: 'all', label: 'Semua Status' },
-    { value: 'aktif', label: 'Aktif' },
-    { value: 'non-aktif', label: 'Non-Aktif' },
-    { value: 'mutasi', label: 'Mutasi' },
-    { value: 'pensiun', label: 'Pensiun' }
+    { value: 'active', label: 'Aktif' },
+    { value: 'inactive', label: 'Non-Aktif' },
+    { value: 'retired', label: 'Pensiun' }
 ])
 
 // Search and filter
@@ -28,10 +28,41 @@ const selectedStatus = ref('all')
 // Pagination
 const currentPage = ref(1)
 const itemsPerPage = 8
-const totalItems = ref(12)
+const totalPages = ref(1)
+const isLoading = ref(false)
 
-// Sample GTK data - will be fetched from backend
-const allTeachers = ref([
+// Teachers data from API
+const allTeachers = ref([])
+
+// Fetch teachers from API
+const fetchTeachers = async () => {
+    isLoading.value = true
+    try {
+        const params = {
+            page: currentPage.value,
+            limit: itemsPerPage,
+            search: searchQuery.value || undefined,
+            status: selectedStatus.value !== 'all' ? selectedStatus.value : undefined
+        }
+
+        const response = await getTeachers(params)
+
+        if (response.success) {
+            allTeachers.value = response.data
+            if (response.pagination) {
+                totalPages.value = response.pagination.totalPages
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching teachers:', error)
+        allTeachers.value = []
+    } finally {
+        isLoading.value = false
+    }
+}
+
+// Sample GTK data - old stub (will be removed)
+const _oldTeachers = ref([
     {
         id: 1,
         name: 'Ade Chea Annisa Noor,S.Pd.',
@@ -154,73 +185,38 @@ const allTeachers = ref([
     }
 ])
 
-// Filtered teachers based on search and status
-const filteredTeachers = computed(() => {
-    let result = allTeachers.value
+// Note: Filtering and pagination now handled by API
+// No need for computed properties as API returns paginated data
 
-    // Filter by status
-    if (selectedStatus.value !== 'all') {
-        result = result.filter(teacher => teacher.status === selectedStatus.value)
-    }
-
-    // Filter by search query
-    if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase()
-        result = result.filter(teacher =>
-            teacher.name.toLowerCase().includes(query) ||
-            teacher.nip.includes(query)
-        )
-    }
-
-    return result
-})
-
-// Paginated teachers
-const paginatedTeachers = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage
-    const end = start + itemsPerPage
-    return filteredTeachers.value.slice(start, end)
-})
-
-// Total pages
-const totalPages = computed(() => {
-    return Math.ceil(filteredTeachers.value.length / itemsPerPage)
-})
-
-// Display info
-const displayInfo = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage + 1
-    const end = Math.min(start + itemsPerPage - 1, filteredTeachers.value.length)
-    const total = filteredTeachers.value.length
-    return `Menampilkan ${start}-${end} dari ${total} GTK`
-})
-
-// Status badge color
+// Status badge color (updated for API values)
 const getStatusBadgeColor = (status) => {
     const colors = {
-        'aktif': 'bg-green-500',
-        'non-aktif': 'bg-red-500',
-        'mutasi': 'bg-blue-500',
-        'pensiun': 'bg-amber-500'
+        'active': 'bg-green-500',
+        'inactive': 'bg-red-500',
+        'retired': 'bg-amber-500'
     }
     return colors[status] || 'bg-neutral-500'
 }
 
-// Status label
+// Status label (updated for API values)
 const getStatusLabel = (status) => {
     const labels = {
-        'aktif': 'Aktif',
-        'non-aktif': 'Non-Aktif',
-        'mutasi': 'Mutasi',
-        'pensiun': 'Pensiun'
+        'active': 'Aktif',
+        'inactive': 'Non-Aktif',
+        'retired': 'Pensiun'
     }
     return labels[status] || status
 }
 
-// Functions - will be implemented when backend is ready
+// Functions
 const handleSearch = () => {
-    // TODO: Implement search functionality with backend API
     currentPage.value = 1
+    fetchTeachers()
+}
+
+const handleStatusChange = () => {
+    currentPage.value = 1
+    fetchTeachers()
 }
 
 const goToPage = (page) => {
@@ -255,6 +251,16 @@ const closeModal = () => {
 const handleImageError = (event) => {
     event.target.src = 'https://via.placeholder.com/200/0d5f5f/ffffff?text=GTK'
 }
+
+// Watch for page changes
+watch(currentPage, () => {
+    fetchTeachers()
+})
+
+// Fetch on mount
+onMounted(() => {
+    fetchTeachers()
+})
 </script>
 
 <template>
@@ -290,7 +296,7 @@ const handleImageError = (event) => {
 
                         <!-- Status Filter -->
                         <div class="md:w-64">
-                            <select v-model="selectedStatus" @change="handleSearch"
+                            <select v-model="selectedStatus" @change="handleStatusChange"
                                 class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
                                 <option v-for="status in statusOptions" :key="status.value" :value="status.value">
                                     {{ status.label }}
@@ -307,13 +313,24 @@ const handleImageError = (event) => {
         <section class="py-12 px-4">
             <div class="max-w-7xl mx-auto">
 
+                <!-- Loading State -->
+                <div v-if="isLoading" class="text-center py-12">
+                    <div class="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
+                        <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p class="text-neutral-600">Memuat data GTK...</p>
+                    </div>
+                </div>
+
                 <!-- No Results -->
-                <div v-if="filteredTeachers.length === 0" class="text-center py-12">
+                <div v-else-if="allTeachers.length === 0" class="text-center py-12">
                     <div class="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
                         <UserGroupIcon class="w-16 h-16 mx-auto text-neutral-300 mb-4" />
                         <h3 class="text-xl font-bold text-neutral-900 mb-2">Tidak ada data</h3>
-                        <p class="text-neutral-600">
+                        <p class="text-neutral-600" v-if="searchQuery">
                             Tidak ditemukan GTK dengan pencarian "{{ searchQuery }}"
+                        </p>
+                        <p class="text-neutral-600" v-else>
+                            Belum ada data GTK yang tersedia
                         </p>
                     </div>
                 </div>
@@ -321,7 +338,7 @@ const handleImageError = (event) => {
                 <!-- Teachers Grid -->
                 <div v-else>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div v-for="teacher in paginatedTeachers" :key="teacher.id"
+                        <div v-for="teacher in allTeachers" :key="teacher.id"
                             class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 relative">
                             <!-- Status Badge -->
                             <div class="absolute top-4 right-4 z-10">
@@ -353,8 +370,12 @@ const handleImageError = (event) => {
                                     {{ teacher.name }}
                                 </h3>
 
-                                <div class="text-sm text-primary font-semibold mb-4">
-                                    {{ teacher.position }}
+                                <div class="text-sm text-primary font-semibold mb-1">
+                                    {{ teacher.subject || 'GTK' }}
+                                </div>
+
+                                <div class="text-xs text-neutral-500 mb-4">
+                                    NIP: {{ teacher.nip || '-' }}
                                 </div>
 
                                 <!-- Detail Button -->
@@ -366,14 +387,8 @@ const handleImageError = (event) => {
                         </div>
                     </div>
 
-                    <!-- Pagination Info and Controls -->
-                    <div class="mt-12 flex flex-col md:flex-row items-center justify-between gap-4">
-                        <!-- Display Info -->
-                        <div class="text-sm text-neutral-600">
-                            {{ displayInfo }}
-                        </div>
-
-                        <!-- Pagination Controls -->
+                    <!-- Pagination Controls -->
+                    <div v-if="totalPages > 1" class="mt-12 flex justify-center">
                         <nav class="inline-flex items-center gap-2">
                             <!-- Previous Button -->
                             <button @click="previousPage" :disabled="currentPage === 1" :class="[
@@ -386,7 +401,7 @@ const handleImageError = (event) => {
                             </button>
 
                             <!-- Page Numbers -->
-                            <button v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="[
+                            <button v-for="page in Math.min(totalPages, 10)" :key="page" @click="goToPage(page)" :class="[
                                 'min-w-10 px-3 py-2 rounded-lg font-medium transition-all cursor-pointer',
                                 currentPage === page
                                     ? 'bg-primary text-white shadow-md'
@@ -437,10 +452,11 @@ const handleImageError = (event) => {
                             <!-- Name and Info -->
                             <div>
                                 <h2 class="text-2xl font-bold text-neutral-900 mb-2">
-                                    {{ selectedTeacher.name.split(',')[0] }}
+                                    {{ selectedTeacher.name }}
                                 </h2>
                                 <p class="text-primary font-semibold">
-                                    {{ selectedTeacher.position }} • {{ getStatusLabel(selectedTeacher.status) }}
+                                    {{ selectedTeacher.subject || 'GTK' }} • {{ getStatusLabel(selectedTeacher.status)
+                                    }}
                                 </p>
                             </div>
                         </div>
@@ -456,24 +472,32 @@ const handleImageError = (event) => {
                                 </h3>
 
                                 <div class="space-y-4">
+                                    <!-- NIP -->
+                                    <div class="flex justify-between items-center py-3 border-b border-neutral-100">
+                                        <span class="text-neutral-600 font-medium">NIP</span>
+                                        <span class="text-neutral-900 font-semibold">{{ selectedTeacher.nip || '-'
+                                            }}</span>
+                                    </div>
+
+                                    <!-- Subject -->
+                                    <div class="flex justify-between items-center py-3 border-b border-neutral-100">
+                                        <span class="text-neutral-600 font-medium">Mata Pelajaran</span>
+                                        <span class="text-neutral-900 font-semibold">{{ selectedTeacher.subject || '-'
+                                            }}</span>
+                                    </div>
+
                                     <!-- Jenis Kelamin -->
                                     <div class="flex justify-between items-center py-3 border-b border-neutral-100">
                                         <span class="text-neutral-600 font-medium">Jenis Kelamin</span>
-                                        <span class="text-neutral-900 font-semibold">{{ selectedTeacher.gender }}</span>
+                                        <span class="text-neutral-900 font-semibold">{{ selectedTeacher.gender || '-'
+                                            }}</span>
                                     </div>
 
                                     <!-- Status -->
-                                    <div class="flex justify-between items-center py-3 border-b border-neutral-100">
+                                    <div class="flex justify-between items-center py-3">
                                         <span class="text-neutral-600 font-medium">Status</span>
                                         <span class="text-green-600 font-bold">{{ getStatusLabel(selectedTeacher.status)
-                                            }}</span>
-                                    </div>
-
-                                    <!-- Status Induk -->
-                                    <div class="flex justify-between items-center py-3">
-                                        <span class="text-neutral-600 font-medium">Status Induk</span>
-                                        <span class="text-neutral-900 font-semibold">{{ selectedTeacher.statusInduk
-                                            }}</span>
+                                        }}</span>
                                     </div>
                                 </div>
                             </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
     MagnifyingGlassIcon,
     UserGroupIcon,
@@ -10,19 +10,19 @@ import {
     PhotoIcon,
     ChevronDownIcon
 } from '@heroicons/vue/24/outline'
+import { getAlumni, registerAlumni, getAlumniGraduationYears, submitContact } from '@/services/api'
 
 // Modals state
 const showAlumniFormModal = ref(false)
 const showContactAdminModal = ref(false)
 
-// Years for filter - from 2017 to current year (2026)
-const currentYear = new Date().getFullYear()
+// Loading state
+const isLoading = ref(false)
+const isSubmitting = ref(false)
+
+// Years for filter
 const years = ref([
-    { value: 'all', label: 'Semua Tahun' },
-    ...Array.from({ length: currentYear - 2017 + 1 }, (_, i) => ({
-        value: String(2017 + i),
-        label: String(2017 + i)
-    })).reverse()
+    { value: 'all', label: 'Semua Tahun' }
 ])
 
 // Search and filter
@@ -32,14 +32,16 @@ const selectedYear = ref('all')
 // Alumni form data
 const alumniForm = ref({
     photo: null,
-    fullName: '',
-    graduationYear: '',
-    birthPlace: '',
-    birthDate: '',
+    full_name: '',
+    graduation_year: '',
+    birth_place: '',
+    birth_date: '',
     email: '',
     phone: '',
     gender: '',
-    address: ''
+    current_address: '',
+    current_occupation: '',
+    current_institution: ''
 })
 
 // Contact admin form data
@@ -65,45 +67,8 @@ const genderOptions = ref([
     { value: 'Perempuan', label: 'Perempuan' }
 ])
 
-// Sample alumni data - will be fetched from backend
-const allAlumni = ref([
-    {
-        id: 1,
-        name: 'Alvaro Prawira Putro Santoso',
-        studentNumber: '1369',
-        photo: '/placeholder-alumni-1.jpg',
-        graduationYear: '2025',
-        email: 'alvaro.prawira.putro.sant...',
-        status: 'tidak-aktif'
-    },
-    {
-        id: 2,
-        name: 'Andhika Martino',
-        studentNumber: '1370',
-        photo: '/placeholder-alumni-2.jpg',
-        graduationYear: '2025',
-        email: 'andhika.martino@sdnked...',
-        status: 'lulus'
-    },
-    {
-        id: 3,
-        name: 'Fajar Nofriyanto',
-        studentNumber: '1371',
-        photo: '/placeholder-alumni-3.jpg',
-        graduationYear: '2025',
-        email: 'fajar.nofriyanto@sdnked...',
-        status: 'tidak-aktif'
-    },
-    {
-        id: 4,
-        name: 'Gilang Radinka Timur',
-        studentNumber: '1372',
-        photo: '/placeholder-alumni-4.jpg',
-        graduationYear: '2025',
-        email: 'gilang.radinka@sdnked...',
-        status: 'tidak-aktif'
-    }
-])
+// Alumni data from API
+const allAlumni = ref([])
 
 // Filtered alumni based on search and year
 const filteredAlumni = computed(() => {
@@ -111,15 +76,15 @@ const filteredAlumni = computed(() => {
 
     // Filter by year
     if (selectedYear.value !== 'all') {
-        result = result.filter(alumni => alumni.graduationYear === selectedYear.value)
+        result = result.filter(alumni => String(alumni.graduation_year) === selectedYear.value)
     }
 
     // Filter by search query
     if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase()
         result = result.filter(alumni =>
-            alumni.name.toLowerCase().includes(query) ||
-            alumni.studentNumber.includes(query)
+            alumni.full_name?.toLowerCase().includes(query) ||
+            alumni.nisn?.includes(query)
         )
     }
 
@@ -128,16 +93,56 @@ const filteredAlumni = computed(() => {
 
 // Status badge color
 const getStatusBadgeColor = (status) => {
-    return status === 'lulus' ? 'bg-green-500' : 'bg-red-500'
+    return status === 'verified' ? 'bg-green-500' : 'bg-yellow-500'
 }
 
 const getStatusLabel = (status) => {
-    return status === 'lulus' ? 'Lulus' : 'Tidak Aktif'
+    return status === 'verified' ? 'Terverifikasi' : 'Menunggu Verifikasi'
 }
 
-// Functions - will be implemented when backend is ready
+// Fetch graduation years from API
+const fetchGraduationYears = async () => {
+    try {
+        const response = await getAlumniGraduationYears()
+        if (response.success && response.data) {
+            const yearOptions = response.data.map(year => ({
+                value: String(year),
+                label: String(year)
+            }))
+            years.value = [
+                { value: 'all', label: 'Semua Tahun' },
+                ...yearOptions
+            ]
+        }
+    } catch (error) {
+        console.error('Error fetching graduation years:', error)
+    }
+}
+
+// Fetch alumni from API
+const fetchAlumni = async () => {
+    isLoading.value = true
+    try {
+        const params = {
+            search: searchQuery.value || undefined,
+            graduation_year: selectedYear.value !== 'all' ? selectedYear.value : undefined,
+            status: 'verified' // Can be changed to fetch all
+        }
+
+        const response = await getAlumni(params)
+        if (response.success) {
+            allAlumni.value = response.data
+        }
+    } catch (error) {
+        console.error('Error fetching alumni:', error)
+        allAlumni.value = []
+    } finally {
+        isLoading.value = false
+    }
+}
+
 const handleSearch = () => {
-    // TODO: Implement search functionality with backend API
+    fetchAlumni()
 }
 
 const openAlumniForm = () => {
@@ -161,34 +166,68 @@ const closeContactAdmin = () => {
 const handlePhotoUpload = (event) => {
     const file = event.target.files[0]
     if (file) {
-        // TODO: Handle photo upload
-        alumniForm.value.photo = URL.createObjectURL(file)
+        alumniForm.value.photo = file
     }
 }
 
-const submitAlumniForm = () => {
-    // TODO: Submit alumni form to backend API
-    console.log('Submitting alumni form:', alumniForm.value)
-    closeAlumniForm()
+const submitAlumniForm = async () => {
+    isSubmitting.value = true
+    try {
+        // Create FormData for file upload
+        const formData = new FormData()
+
+        // Add all form fields
+        Object.keys(alumniForm.value).forEach(key => {
+            if (alumniForm.value[key]) {
+                formData.append(key, alumniForm.value[key])
+            }
+        })
+
+        const response = await registerAlumni(formData)
+
+        if (response.success) {
+            alert('Pendaftaran alumni berhasil! Data Anda akan diverifikasi oleh admin.')
+            closeAlumniForm()
+            fetchAlumni() // Refresh list
+        }
+    } catch (error) {
+        console.error('Error submitting alumni form:', error)
+        alert('Gagal mendaftar sebagai alumni. Silakan coba lagi.')
+    } finally {
+        isSubmitting.value = false
+    }
 }
 
-const submitContactForm = () => {
-    // TODO: Submit contact form to backend API
-    console.log('Submitting contact form:', contactForm.value)
-    closeContactAdmin()
+const submitContactForm = async () => {
+    isSubmitting.value = true
+    try {
+        const response = await submitContact(contactForm.value)
+
+        if (response.success) {
+            alert('Pesan Anda berhasil dikirim! Admin akan menghubungi Anda segera.')
+            closeContactAdmin()
+        }
+    } catch (error) {
+        console.error('Error submitting contact form:', error)
+        alert('Gagal mengirim pesan. Silakan coba lagi.')
+    } finally {
+        isSubmitting.value = false
+    }
 }
 
 const resetAlumniForm = () => {
     alumniForm.value = {
         photo: null,
-        fullName: '',
-        graduationYear: '',
-        birthPlace: '',
-        birthDate: '',
+        full_name: '',
+        graduation_year: '',
+        birth_place: '',
+        birth_date: '',
         email: '',
         phone: '',
         gender: '',
-        address: ''
+        current_address: '',
+        current_occupation: '',
+        current_institution: ''
     }
 }
 
@@ -204,6 +243,12 @@ const resetContactForm = () => {
 const handleImageError = (event) => {
     event.target.src = 'https://via.placeholder.com/200x250/dc2626/ffffff?text=Alumni'
 }
+
+// Fetch data on mount
+onMounted(() => {
+    fetchGraduationYears()
+    fetchAlumni()
+})
 </script>
 
 <template>
@@ -285,8 +330,16 @@ const handleImageError = (event) => {
         <section class="py-8 px-4">
             <div class="max-w-7xl mx-auto">
 
+                <!-- Loading State -->
+                <div v-if="isLoading" class="text-center py-12">
+                    <div class="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
+                        <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p class="text-neutral-600">Memuat data alumni...</p>
+                    </div>
+                </div>
+
                 <!-- No Results -->
-                <div v-if="filteredAlumni.length === 0" class="text-center py-12">
+                <div v-else-if="filteredAlumni.length === 0" class="text-center py-12">
                     <div class="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
                         <UserGroupIcon class="w-16 h-16 mx-auto text-neutral-300 mb-4" />
                         <h3 class="text-xl font-bold text-neutral-900 mb-2">Tidak ada data</h3>
@@ -322,7 +375,7 @@ const handleImageError = (event) => {
                             <!-- Alumni Info -->
                             <div class="grow">
                                 <h3 class="text-xl font-bold text-neutral-900 mb-4">
-                                    {{ alumni.name }}
+                                    {{ alumni.full_name }}
                                 </h3>
 
                                 <div class="space-y-3 text-sm">
@@ -332,7 +385,7 @@ const handleImageError = (event) => {
                                             class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center shrink-0">
                                             <span class="text-blue-600 text-xs font-bold">ID</span>
                                         </div>
-                                        <span class="text-blue-600 font-semibold">{{ alumni.studentNumber }}</span>
+                                        <span class="text-blue-600 font-semibold">{{ alumni.nisn || '-' }}</span>
                                     </div>
 
                                     <!-- Graduation Year -->
@@ -340,7 +393,7 @@ const handleImageError = (event) => {
                                         <CalendarIcon class="w-6 h-6 text-neutral-500 shrink-0" />
                                         <div>
                                             <p class="text-neutral-500 text-xs">Tahun Lulus</p>
-                                            <p class="text-neutral-900 font-semibold">{{ alumni.graduationYear }}</p>
+                                            <p class="text-neutral-900 font-semibold">{{ alumni.graduation_year }}</p>
                                         </div>
                                     </div>
 
@@ -349,7 +402,8 @@ const handleImageError = (event) => {
                                         <EnvelopeIcon class="w-6 h-6 text-neutral-500 shrink-0" />
                                         <div>
                                             <p class="text-neutral-500 text-xs">Email</p>
-                                            <p class="text-neutral-900 font-medium truncate">{{ alumni.email }}</p>
+                                            <p class="text-neutral-900 font-medium truncate">{{ alumni.email || '-' }}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -357,7 +411,7 @@ const handleImageError = (event) => {
                                 <!-- Graduation Badge -->
                                 <div class="mt-4 flex items-center gap-2">
                                     <CalendarIcon class="w-4 h-4 text-neutral-500" />
-                                    <span class="text-xs text-neutral-500">1 Juli {{ alumni.graduationYear }}</span>
+                                    <span class="text-xs text-neutral-500">Tahun {{ alumni.graduation_year }}</span>
                                     <span :class="[
                                         getStatusBadgeColor(alumni.status),
                                         'px-2 py-0.5 rounded text-white text-xs font-semibold ml-auto'
@@ -413,7 +467,7 @@ const handleImageError = (event) => {
                                 <label class="block text-sm font-semibold text-neutral-700 mb-2">
                                     Nama Lengkap <span class="text-red-500">*</span>
                                 </label>
-                                <input v-model="alumniForm.fullName" type="text" required
+                                <input v-model="alumniForm.full_name" type="text" required
                                     class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
                             </div>
 
@@ -422,7 +476,7 @@ const handleImageError = (event) => {
                                 <label class="block text-sm font-semibold text-neutral-700 mb-2">
                                     Tahun Lulus <span class="text-red-500">*</span>
                                 </label>
-                                <input v-model="alumniForm.graduationYear" type="text" required
+                                <input v-model="alumniForm.graduation_year" type="text" required
                                     class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
                             </div>
 
@@ -431,7 +485,7 @@ const handleImageError = (event) => {
                                 <label class="block text-sm font-semibold text-neutral-700 mb-2">
                                     Tempat Lahir
                                 </label>
-                                <input v-model="alumniForm.birthPlace" type="text"
+                                <input v-model="alumniForm.birth_place" type="text"
                                     class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
                             </div>
 
@@ -440,7 +494,7 @@ const handleImageError = (event) => {
                                 <label class="block text-sm font-semibold text-neutral-700 mb-2">
                                     Tanggal Lahir
                                 </label>
-                                <input v-model="alumniForm.birthDate" type="date"
+                                <input v-model="alumniForm.birth_date" type="date"
                                     class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
                             </div>
 
@@ -475,12 +529,30 @@ const handleImageError = (event) => {
                                 </select>
                             </div>
 
-                            <!-- Alamat -->
+                            <!-- Alamat Saat Ini -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-neutral-700 mb-2">
+                                    Alamat Saat Ini
+                                </label>
+                                <input v-model="alumniForm.current_address" type="text"
+                                    class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            </div>
+
+                            <!-- Pekerjaan Saat Ini -->
                             <div>
                                 <label class="block text-sm font-semibold text-neutral-700 mb-2">
-                                    Alamat
+                                    Pekerjaan Saat Ini
                                 </label>
-                                <input v-model="alumniForm.address" type="text"
+                                <input v-model="alumniForm.current_occupation" type="text"
+                                    class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            </div>
+
+                            <!-- Institusi/Perusahaan Saat Ini -->
+                            <div>
+                                <label class="block text-sm font-semibold text-neutral-700 mb-2">
+                                    Institusi/Perusahaan Saat Ini
+                                </label>
+                                <input v-model="alumniForm.current_institution" type="text"
                                     class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
                             </div>
                         </div>
@@ -491,10 +563,10 @@ const handleImageError = (event) => {
                                 class="px-6 py-3 bg-neutral-200 hover:bg-neutral-300 text-neutral-700 font-semibold rounded-lg transition-colors cursor-pointer">
                                 Batal
                             </button>
-                            <button type="submit"
-                                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 cursor-pointer">
+                            <button type="submit" :disabled="isSubmitting"
+                                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                                 <PlusCircleIcon class="w-5 h-5" />
-                                Kirim Data
+                                {{ isSubmitting ? 'Mengirim...' : 'Kirim Data' }}
                             </button>
                         </div>
                     </form>
