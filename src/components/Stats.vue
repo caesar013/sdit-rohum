@@ -1,5 +1,8 @@
 <script setup>
-const stats = [
+import { ref, onMounted } from 'vue'
+import { getSchoolProfileByKey, getStudents, getTeachers, getAlumni } from '@/services/api'
+
+const stats = ref([
     {
         value: '63+',
         label: 'Siswa Aktif',
@@ -20,7 +23,43 @@ const stats = [
         label: 'Akreditasi',
         color: 'from-green-500 to-green-600'
     }
-]
+])
+
+// Fetch stats from API
+const fetchStats = async () => {
+    try {
+        // Fetch students count
+        const studentsResponse = await getStudents({ status: 'active', limit: 1 })
+        if (studentsResponse.success && studentsResponse.pagination) {
+            stats.value[0].value = `${studentsResponse.pagination.totalRecords}+`
+        }
+
+        // Fetch teachers count
+        const teachersResponse = await getTeachers({ status: 'active', limit: 1 })
+        if (teachersResponse.success && teachersResponse.pagination) {
+            stats.value[1].value = teachersResponse.pagination.totalRecords
+        }
+
+        // Fetch alumni count
+        const alumniResponse = await getAlumni({ status: 'verified', limit: 1 })
+        if (alumniResponse.success && alumniResponse.pagination) {
+            stats.value[2].value = alumniResponse.pagination.totalRecords
+        }
+
+        // Fetch accreditation
+        const accreditationResponse = await getSchoolProfileByKey('accreditation')
+        if (accreditationResponse.success && accreditationResponse.data) {
+            stats.value[3].value = accreditationResponse.data.value || 'A'
+        }
+    } catch (error) {
+        console.error('Error fetching stats:', error)
+        // Keep default values on error
+    }
+}
+
+onMounted(() => {
+    fetchStats()
+})
 </script>
 
 <template>

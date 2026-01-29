@@ -1,48 +1,112 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { getNews } from '@/services/api'
 
 const currentIndex = ref(0)
 let autoScrollInterval = null
 
-const newsArticles = [
-    {
-        id: 1,
-        title: 'Selamat Memasuki Masa Purna Tugas, Ibu Siti Mariya...',
-        excerpt: 'Tanggal, 1 Agustus 2025 – Suasana haru menyelimuti SD IT Rohmatul Ummah, Kapanewon Pengasih, saat seluruh keluarga besar sekolah melepas salah satu...',
-        image: '/news-1.jpg',
-        date: '08 Agustus 2025',
-        category: 'Berita',
-        categoryColor: 'bg-purple-500'
-    },
-    {
-        id: 2,
-        title: 'Installer Aplikasi Dapodik versi 2026.b',
-        excerpt: 'Berdasarkan sumber dari website resmi Dapodik&nbsp;, pada tanggal 13 Januari 2026 telah rilis Aplikasi Dapodik Versi 2026.b, dengan beberapa catatan p',
-        image: '/news-2.jpg',
-        date: '14 Januari 2026',
-        category: 'Informasi',
-        categoryColor: 'bg-teal-500'
-    },
-    {
-        id: 3,
-        title: 'Serunya Outing Class SD IT Rohmatul Ummah ke Yogya...',
-        excerpt: 'Sabtu, 25 Oktober 2025 menjadi hari penuh keceriaan bagi siswa SD IT Rohmatul Ummah Kapanewon Pengasih. Hari ini, para siswa mengikuti Outing Class ke...',
-        image: '/news-3.jpg',
-        date: '27 Oktober 2025',
-        category: 'Berita',
-        categoryColor: 'bg-purple-500'
+const newsArticles = ref([])
+
+// Fetch latest news from API
+const fetchNews = async () => {
+    try {
+        const response = await getNews({
+            page: 1,
+            limit: 5,
+            status: 'published'
+        })
+
+        if (response.success && response.data.length > 0) {
+            newsArticles.value = response.data.map(news => ({
+                id: news.id,
+                title: news.title,
+                excerpt: news.excerpt || news.content?.substring(0, 150) + '...',
+                image: news.featured_image || '/news-placeholder.jpg',
+                date: formatDate(news.created_at),
+                category: getCategoryLabel(news.category),
+                categoryColor: getCategoryColor(news.category),
+                slug: news.slug
+            }))
+        }
+    } catch (error) {
+        console.error('Error fetching news:', error)
+        // Keep empty array or set default news
+        setDefaultNews()
     }
-]
+}
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    const options = { day: '2-digit', month: 'long', year: 'numeric' }
+    return date.toLocaleDateString('id-ID', options)
+}
+
+const getCategoryLabel = (category) => {
+    const labels = {
+        'academic': 'Akademik',
+        'achievement': 'Prestasi',
+        'event': 'Acara',
+        'announcement': 'Pengumuman',
+        'other': 'Berita'
+    }
+    return labels[category] || 'Berita'
+}
+
+const getCategoryColor = (category) => {
+    const colors = {
+        'academic': 'bg-blue-500',
+        'achievement': 'bg-green-500',
+        'event': 'bg-purple-500',
+        'announcement': 'bg-orange-500',
+        'other': 'bg-teal-500'
+    }
+    return colors[category] || 'bg-teal-500'
+}
+
+const setDefaultNews = () => {
+    newsArticles.value = [
+        {
+            id: 1,
+            title: 'Selamat Memasuki Masa Purna Tugas, Ibu Siti Mariya...',
+            excerpt: 'Tanggal, 1 Agustus 2025 – Suasana haru menyelimuti SD IT Rohmatul Ummah, Kapanewon Pengasih, saat seluruh keluarga besar sekolah melepas salah satu...',
+            image: '/news-1.jpg',
+            date: '08 Agustus 2025',
+            category: 'Berita',
+            categoryColor: 'bg-purple-500'
+        },
+        {
+            id: 2,
+            title: 'Installer Aplikasi Dapodik versi 2026.b',
+            excerpt: 'Berdasarkan sumber dari website resmi Dapodik&nbsp;, pada tanggal 13 Januari 2026 telah rilis Aplikasi Dapodik Versi 2026.b, dengan beberapa catatan p',
+            image: '/news-2.jpg',
+            date: '14 Januari 2026',
+            category: 'Informasi',
+            categoryColor: 'bg-teal-500'
+        },
+        {
+            id: 3,
+            title: 'Serunya Outing Class SD IT Rohmatul Ummah ke Yogya...',
+            excerpt: 'Sabtu, 25 Oktober 2025 menjadi hari penuh keceriaan bagi siswa SD IT Rohmatul Ummah Kapanewon Pengasih. Hari ini, para siswa mengikuti Outing Class ke...',
+            image: '/news-3.jpg',
+            date: '27 Oktober 2025',
+            category: 'Berita',
+            categoryColor: 'bg-purple-500'
+        }
+    ]
+}
 
 const scrollToNext = () => {
-    currentIndex.value = (currentIndex.value + 1) % newsArticles.length
+    if (newsArticles.value.length === 0) return
+    currentIndex.value = (currentIndex.value + 1) % newsArticles.value.length
 }
 
 const scrollToPrev = () => {
-    currentIndex.value = currentIndex.value === 0 ? newsArticles.length - 1 : currentIndex.value - 1
+    if (newsArticles.value.length === 0) return
+    currentIndex.value = currentIndex.value === 0 ? newsArticles.value.length - 1 : currentIndex.value - 1
 }
 
 onMounted(() => {
+    fetchNews()
     autoScrollInterval = setInterval(scrollToNext, 5000)
 })
 

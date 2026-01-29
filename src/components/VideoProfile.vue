@@ -1,4 +1,44 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import { getVideos } from '@/services/api'
+
+const profileVideo = ref(null)
+
+// Fetch profile video from API
+const fetchProfileVideo = async () => {
+    try {
+        const response = await getVideos({
+            category: 'profile',
+            limit: 1
+        })
+
+        if (response.success && response.data.length > 0) {
+            profileVideo.value = response.data[0]
+        }
+    } catch (error) {
+        console.error('Error fetching profile video:', error)
+    }
+}
+
+// Get YouTube embed URL
+const getEmbedUrl = (video) => {
+    if (!video) return ''
+    return video.platform === 'youtube'
+        ? `https://www.youtube.com/embed/${video.video_url}`
+        : `https://player.vimeo.com/video/${video.video_url}`
+}
+
+// Get YouTube watch URL
+const getWatchUrl = (video) => {
+    if (!video) return '#'
+    return video.platform === 'youtube'
+        ? `https://www.youtube.com/watch?v=${video.video_url}`
+        : `https://vimeo.com/${video.video_url}`
+}
+
+onMounted(() => {
+    fetchProfileVideo()
+})
 </script>
 
 <template>
@@ -16,35 +56,21 @@
             </div>
 
             <!-- Video Container -->
-            <div class="bg-white rounded-3xl shadow-xl overflow-hidden p-6 md:p-8">
+            <div v-if="profileVideo" class="bg-white rounded-3xl shadow-xl overflow-hidden p-6 md:p-8">
                 <div class="aspect-video bg-neutral-900 rounded-2xl overflow-hidden mb-6 relative">
-                    <!-- Placeholder for video - replace with actual YouTube embed -->
-                    <!-- <img src="/video-thumbnail.jpg" alt="Video Profile Sekolah" class="w-full h-full object-cover" -->
-                    <img src="" alt="Video Profile Sekolah" class="w-full h-full object-cover"
-                        @error="$event.target.src = 'https://placehold.co/1920x1080/0d5f5f/white?text=Video+Profil+Sekolah'" />
-                    <!-- Play Button Overlay -->
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <button
-                            class="w-20 h-20 bg-primary hover:bg-primary-dark rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-2xl">
-                            <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Video Caption Overlay -->
-                    <div class="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-6">
-                        <p class="text-white font-bold text-lg">Pemanfaatan Sarana dan Prasarana Sekolah</p>
-                    </div>
+                    <!-- YouTube/Vimeo Embed -->
+                    <iframe :src="getEmbedUrl(profileVideo)" :title="profileVideo.title" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen class="w-full h-full"></iframe>
                 </div>
 
                 <!-- Video Info -->
                 <div class="border-t border-neutral-200 pt-6">
                     <h3 class="text-2xl font-bold text-neutral-900 mb-3">
-                        Profil Resmi SD IT Rohmatul Ummah
+                        {{ profileVideo.title }}
                     </h3>
                     <p class="text-neutral-600 mb-6">
-                        Video lengkap tentang fasilitas, program unggulan, dan kegiatan siswa kami.
+                        {{ profileVideo.description }}
                     </p>
 
                     <div class="flex flex-wrap items-center gap-4">
@@ -56,23 +82,32 @@
                             </svg>
                             <span class="font-medium">Channel Sekolah</span>
                         </div>
-                        <div class="flex items-center text-neutral-600">
+                        <div v-if="profileVideo.duration" class="flex items-center text-neutral-600">
                             <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span class="font-medium">5:32 menit</span>
+                            <span class="font-medium">{{ profileVideo.duration }}</span>
                         </div>
-                        <a href="https://youtube.com" target="_blank"
+                        <a :href="getWatchUrl(profileVideo)" target="_blank"
                             class="ml-auto bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-2 rounded-lg transition-colors inline-flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
                             </svg>
-                            Buka di YouTube
+                            Buka di {{ profileVideo.platform === 'youtube' ? 'YouTube' : 'Vimeo' }}
                         </a>
                     </div>
                 </div>
+            </div>
+
+            <!-- Fallback if no video -->
+            <div v-else class="bg-white rounded-3xl shadow-xl overflow-hidden p-6 md:p-8">
+                <div class="aspect-video bg-neutral-900 rounded-2xl overflow-hidden mb-6 relative">
+                    <img src="" alt="Video Profile Sekolah" class="w-full h-full object-cover"
+                        @error="$event.target.src = 'https://placehold.co/1920x1080/0d5f5f/white?text=Video+Profil+Sekolah'" />
+                </div>
+                <p class="text-center text-neutral-600">Video profil akan segera hadir</p>
             </div>
         </div>
     </section>
