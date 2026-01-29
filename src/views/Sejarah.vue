@@ -1,8 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { BookOpenIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
+import { getSchoolProfileByKey } from '@/services/api'
 
-// School history data - will be fetched from backend in the future
+const isLoading = ref(false)
+
+// School history data
 const historyData = ref({
     title: 'Sejarah Sekolah',
     subtitle: 'Perjalanan panjang SD Negeri Kedungrejo',
@@ -70,6 +73,28 @@ const historyData = ref({
             color: 'from-violet-400 to-violet-800'
         }
     ]
+})
+
+// Fetch school history from API
+const fetchHistory = async () => {
+    isLoading.value = true
+    try {
+        const response = await getSchoolProfileByKey('history')
+
+        if (response.success && response.data && response.data.value) {
+            // You can parse the history text or use it as introduction
+            historyData.value.introduction.text = response.data.value
+        }
+    } catch (error) {
+        console.error('Error fetching school history:', error)
+        // Keep default values on error
+    } finally {
+        isLoading.value = false
+    }
+}
+
+onMounted(() => {
+    fetchHistory()
 })
 </script>
 

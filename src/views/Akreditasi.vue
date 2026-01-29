@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
     ShieldCheckIcon,
     ChevronDownIcon,
@@ -9,8 +9,11 @@ import {
     ArrowDownTrayIcon,
     DocumentTextIcon
 } from '@heroicons/vue/24/outline'
+import { getSchoolProfile } from '@/services/api'
 
-// Accreditation data - will be fetched from backend in the future
+const isLoading = ref(false)
+
+// Accreditation data
 const accreditationData = ref({
     status: {
         grade: 'A',
@@ -39,6 +42,47 @@ const accreditationData = ref({
             'Pengakuan nasional atas ijazah'
         ]
     }
+})
+
+// Fetch accreditation data from API
+const fetchAccreditation = async () => {
+    isLoading.value = true
+    try {
+        const response = await getSchoolProfile()
+
+        if (response.success && response.data) {
+            const profileData = {}
+            response.data.forEach(item => {
+                profileData[item.key] = item.value
+            })
+
+            // Map API data to component structure
+            if (profileData.accreditation) {
+                accreditationData.value.status.grade = profileData.accreditation.charAt(0) || 'A'
+            }
+            if (profileData.accreditation_visit_date) {
+                accreditationData.value.status.visitDate = profileData.accreditation_visit_date
+            }
+            if (profileData.accreditation_issue_date) {
+                accreditationData.value.status.issuedDate = profileData.accreditation_issue_date
+            }
+            if (profileData.accreditation_valid_until) {
+                accreditationData.value.status.validUntil = profileData.accreditation_valid_until
+            }
+            if (profileData.accreditation_certificate_url) {
+                accreditationData.value.certificate.downloadUrl = profileData.accreditation_certificate_url
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching accreditation data:', error)
+        // Keep default values on error
+    } finally {
+        isLoading.value = false
+    }
+}
+
+onMounted(() => {
+    fetchAccreditation()
 })
 </script>
 

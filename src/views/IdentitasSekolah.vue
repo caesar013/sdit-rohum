@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
     BuildingLibraryIcon,
     ChevronDownIcon,
@@ -10,8 +10,11 @@ import {
     InformationCircleIcon,
     MapIcon
 } from '@heroicons/vue/24/outline'
+import { getSchoolProfile } from '@/services/api'
 
-// School identity data - will be fetched from backend in the future
+const isLoading = ref(false)
+
+// School identity data
 const schoolData = ref({
     name: 'SD Negeri Kedungrejo',
     npsn: '20403001',
@@ -52,6 +55,46 @@ const schoolData = ref({
             value: '1960'
         }
     }
+})
+
+// Fetch school profile data from API
+const fetchSchoolProfile = async () => {
+    isLoading.value = true
+    try {
+        const response = await getSchoolProfile()
+
+        if (response.success && response.data) {
+            const profileData = {}
+            response.data.forEach(item => {
+                profileData[item.key] = item.value
+            })
+
+            // Map API data to component structure
+            if (profileData.school_name) schoolData.value.name = profileData.school_name
+            if (profileData.npsn) schoolData.value.npsn = profileData.npsn
+            if (profileData.principal_name) schoolData.value.principal.name = profileData.principal_name
+            if (profileData.phone) schoolData.value.contact.phone = profileData.phone
+            if (profileData.fax) schoolData.value.contact.fax = profileData.fax
+            if (profileData.email) schoolData.value.email.email = profileData.email
+            if (profileData.website) schoolData.value.email.website = profileData.website
+            if (profileData.address) schoolData.value.address.street = profileData.address
+            if (profileData.village) schoolData.value.address.village = profileData.village
+            if (profileData.district) schoolData.value.address.district = profileData.district
+            if (profileData.city) schoolData.value.address.city = profileData.city
+            if (profileData.postal_code) schoolData.value.address.postalCode = `Kode Pos: ${profileData.postal_code}`
+            if (profileData.accreditation) schoolData.value.additionalInfo.accreditation.value = profileData.accreditation
+            if (profileData.established_year) schoolData.value.additionalInfo.established.value = profileData.established_year
+        }
+    } catch (error) {
+        console.error('Error fetching school profile:', error)
+        // Keep default values on error
+    } finally {
+        isLoading.value = false
+    }
+}
+
+onMounted(() => {
+    fetchSchoolProfile()
 })
 </script>
 
