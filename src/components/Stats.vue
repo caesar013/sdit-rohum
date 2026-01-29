@@ -29,27 +29,52 @@ const stats = ref([
 const fetchStats = async () => {
     try {
         // Fetch students count
-        const studentsResponse = await getStudents({ status: 'active', limit: 1 })
-        if (studentsResponse.success && studentsResponse.pagination) {
-            stats.value[0].value = `${studentsResponse.pagination.totalRecords}+`
+        try {
+            const studentsResponse = await getStudents({ status: 'active', limit: 1 })
+            if (studentsResponse.success && studentsResponse.pagination) {
+                const count = studentsResponse.pagination.total 
+                stats.value[0].value = `${count}+`
+            } else if (studentsResponse.data) {
+                stats.value[0].value = `${studentsResponse.data.length}+`
+            }
+        } catch (err) {
+            console.error('Error fetching students:', err)
         }
 
         // Fetch teachers count
-        const teachersResponse = await getTeachers({ status: 'active', limit: 1 })
-        if (teachersResponse.success && teachersResponse.pagination) {
-            stats.value[1].value = teachersResponse.pagination.totalRecords
+        try {
+            const teachersResponse = await getTeachers({ status: 'active', limit: 1 })
+            if (teachersResponse.success && teachersResponse.pagination) {
+                const count = teachersResponse.pagination.total
+                stats.value[1].value = count
+            } else if (teachersResponse.data) {
+                stats.value[1].value = teachersResponse.data.length
+            }
+        } catch (err) {
+            console.error('Error fetching teachers:', err)
         }
 
         // Fetch alumni count
-        const alumniResponse = await getAlumni({ status: 'verified', limit: 1 })
-        if (alumniResponse.success && alumniResponse.pagination) {
-            stats.value[2].value = alumniResponse.pagination.totalRecords
+        try {
+            const alumniResponse = await getAlumni({ status: 'verified', limit: 1 })
+            if (alumniResponse.success && alumniResponse.pagination) {
+                const count = alumniResponse.pagination.total
+                stats.value[2].value = count
+            } else if (alumniResponse.data) {
+                stats.value[2].value = alumniResponse.data.length
+            }
+        } catch (err) {
+            console.error('Error fetching alumni:', err)
         }
 
         // Fetch accreditation
-        const accreditationResponse = await getSchoolProfileByKey('accreditation')
-        if (accreditationResponse.success && accreditationResponse.data) {
-            stats.value[3].value = accreditationResponse.data.value || 'A'
+        try {
+            const accreditationResponse = await getSchoolProfileByKey('accreditation')
+            if (accreditationResponse.success && accreditationResponse.data) {
+                stats.value[3].value = accreditationResponse.data.value || 'A'
+            }
+        } catch (err) {
+            console.error('Error fetching accreditation:', err)
         }
     } catch (error) {
         console.error('Error fetching stats:', error)

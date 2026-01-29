@@ -8,8 +8,10 @@ const contactInfo = {
     },
     phone: '082136781467',
     email: 'info@sditrohmatulummah.sch.id',
-    // Coordinates for SD IT Rohmatul Ummah (approximate)
-    mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.6022741462647!2d110.91723483055827!3d-6.814004779397993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e70cf92513e9e27%3A0x99636af1c56445f5!2sTK%20IT%20-%20SD%20IT%20Rohmatul%20Ummah!5e0!3m2!1sen!2sid!4v1768990498248!5m2!1sen!2sid'
+    // For iframe embed
+    mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.6022741462647!2d110.91723483055827!3d-6.814004779397993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e70cf92513e9e27%3A0x99636af1c56445f5!2sTK%20IT%20-%20SD%20IT%20Rohmatul%20Ummah!5e0!3m2!1sen!2sid!4v1768990498248!5m2!1sen!2sid',
+    // For direct link
+    mapUrl: 'https://www.google.com/maps/place/TK+IT+-+SD+IT+Rohmatul+Ummah/@-6.814004779397993,110.91723483055827,17z/data=!3m1!4b1!4m6!3m5!1s0x2e70cf92513e9e27:0x99636af1c56445f5!8m2!3d-6.8140048!4d110.9198098!16s%2Fg%2F11b6g6xfxf'
 }
 </script>
 
@@ -84,7 +86,7 @@ const contactInfo = {
                     </div>
 
                     <!-- Google Maps Button -->
-                    <a :href="contactInfo.mapEmbedUrl" target="_blank"
+                    <a :href="contactInfo.mapUrl" target="_blank"
                         class="mt-6 w-full bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-lg transition-colors inline-flex items-center justify-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
