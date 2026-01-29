@@ -64,6 +64,15 @@ export const getNewsCategories = async () => {
   return api.get("/news/categories");
 };
 
+// ==================== NEWS COMMENTS ====================
+export const getNewsComments = async (newsId, params = {}) => {
+  return api.get(`/news/${newsId}/comments`, { params });
+};
+
+export const submitNewsComment = async (newsId, data) => {
+  return api.post(`/news/${newsId}/comments`, data);
+};
+
 // ==================== VIDEOS ====================
 export const getVideos = async (params = {}) => {
   return api.get("/videos", { params });

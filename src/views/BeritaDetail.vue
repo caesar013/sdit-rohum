@@ -11,7 +11,7 @@ import {
     ShareIcon,
     ChatBubbleLeftIcon
 } from '@heroicons/vue/24/outline'
-import { getNewsBySlug, getNews } from '@/services/api'
+import { getNewsBySlug, getNews, getNewsComments, submitNewsComment } from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,6 +19,7 @@ const router = useRouter()
 // Article data
 const article = ref(null)
 const isLoading = ref(true)
+const isSubmittingComment = ref(false)
 
 // Comments - will be implemented later
 const comments = ref([])
@@ -41,8 +42,11 @@ const fetchArticle = async () => {
 
         if (response.success) {
             article.value = response.data
-            // Fetch related news
-            await fetchRelatedNews()
+            // Fetch related news and comments
+            await Promise.all([
+                fetchRelatedNews(),
+                fetchComments()
+            ])
         } else {
             // Article not found, redirect to news page
             router.push('/berita')
@@ -72,6 +76,30 @@ const fetchRelatedNews = async () => {
     }
 }
 
+// Fetch comments for the article
+const fetchComments = async () => {
+    if (!article.value?.id) return
+
+    try {
+        const response = await getNewsComments(article.value.id)
+
+        if (response.success && response.data) {
+            comments.value = response.data.map(comment => ({
+                id: comment.id,
+                name: comment.name,
+                email: comment.email,
+                comment: comment.comment,
+                date: formatDate(comment.created_at),
+                avatar: comment.name.charAt(0).toUpperCase()
+            }))
+        }
+    } catch (error) {
+        console.error('Error fetching comments:', error)
+        // If API not implemented yet, keep empty array
+        comments.value = []
+    }
+}
+
 // Functions
 const goBack = () => {
     router.push('/berita')
@@ -84,14 +112,33 @@ const goToNewsDetail = (slug) => {
     fetchArticle()
 }
 
-const submitComment = () => {
-    // TODO: Implement comment submission to backend API
-    console.log('Submitting comment:', commentForm.value)
-    // Reset form after submission
-    commentForm.value = {
-        name: '',
-        email: '',
-        comment: ''
+const submitComment = async () => {
+    if (!article.value?.id) return
+
+    isSubmittingComment.value = true
+    try {
+        const response = await submitNewsComment(article.value.id, {
+            name: commentForm.value.name,
+            email: commentForm.value.email,
+            comment: commentForm.value.comment
+        })
+
+        if (response.success) {
+            alert('Komentar berhasil dikirim! Menunggu persetujuan admin.')
+            // Reset form
+            commentForm.value = {
+                name: '',
+                email: '',
+                comment: ''
+            }
+            // Refresh comments
+            await fetchComments()
+        }
+    } catch (error) {
+        console.error('Error submitting comment:', error)
+        alert('Gagal mengirim komentar. Fitur komentar belum tersedia atau terjadi kesalahan.')
+    } finally {
+        isSubmittingComment.value = false
     }
 }
 
@@ -153,13 +200,25 @@ onMounted(() => {
                     <router-link to="/berita"
                         class="hover:text-white transition-colors cursor-pointer">Berita</router-link>
                     <ChevronRightIcon class="w-4 h-4 mx-2" />
-                    <span class="text-white line-clamp-1">{{ article.title }}</span>
+                    <span class="text-white line-clamp-1">{{ article?.title || 'Loading...' }}</span>
                 </nav>
             </div>
         </section>
 
+        <!-- Loading State -->
+        <div v-if="isLoading" class="py-12 px-4 -mt-4 relative z-10">
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-white rounded-3xl shadow-2xl p-12">
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mb-4"></div>
+                        <p class="text-neutral-600">Memuat artikel...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Article Content -->
-        <article class="py-12 px-4 -mt-4 relative z-10">
+        <article v-else-if="article" class="py-12 px-4 -mt-4 relative z-10">
             <div class="max-w-5xl mx-auto">
                 <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
@@ -246,9 +305,9 @@ onMounted(() => {
                                     required rows="6"
                                     class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"></textarea>
                             </div>
-                            <button type="submit"
-                                class="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-colors cursor-pointer">
-                                Kirim Komentar
+                            <button type="submit" :disabled="isSubmittingComment"
+                                class="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                {{ isSubmittingComment ? 'Mengirim...' : 'Kirim Komentar' }}
                             </button>
                         </form>
 
