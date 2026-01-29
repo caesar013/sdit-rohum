@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getNews } from '@/services/api'
+
+const router = useRouter()
 
 const currentIndex = ref(0)
 let autoScrollInterval = null
@@ -105,6 +108,14 @@ const scrollToPrev = () => {
     currentIndex.value = currentIndex.value === 0 ? newsArticles.value.length - 1 : currentIndex.value - 1
 }
 
+const goToNewsDetail = (slug) => {
+    router.push(`/berita/${slug}`)
+}
+
+const goToAllNews = () => {
+    router.push('/berita')
+}
+
 onMounted(() => {
     fetchNews()
     autoScrollInterval = setInterval(scrollToNext, 5000)
@@ -154,8 +165,8 @@ onUnmounted(() => {
                         <p class="text-neutral-600 mb-4 line-clamp-3">
                             {{ article.excerpt }}
                         </p>
-                        <a href="#"
-                            class="inline-flex items-center text-primary hover:text-primary-dark font-semibold transition-colors">
+                        <a @click="goToNewsDetail(article.slug)"
+                            class="inline-flex items-center text-primary hover:text-primary-dark font-semibold transition-colors cursor-pointer">
                             Selengkapnya
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -180,7 +191,7 @@ onUnmounted(() => {
                     <button class="w-10 h-10 bg-primary text-white rounded-lg font-semibold cursor-pointer">1</button>
                 </div>
 
-                <button
+                <button @click="goToAllNews"
                     class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center font-semibold cursor-pointer">
                     Lihat Semua Berita
                 </button>
