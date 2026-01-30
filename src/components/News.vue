@@ -159,7 +159,8 @@ onUnmounted(() => {
                     <!-- Article Content -->
                     <div class="p-6">
                         <p class="text-sm text-neutral-500 mb-2">{{ article.date }}</p>
-                        <h3 class="text-xl font-bold text-neutral-900 mb-3 line-clamp-2">
+                        <h3 @click="goToNewsDetail(article.slug)"
+                            class="text-xl font-bold text-neutral-900 mb-3 line-clamp-2 cursor-pointer hover:text-primary transition-colors">
                             {{ article.title }}
                         </h3>
                         <p class="text-neutral-600 mb-4 line-clamp-3">
