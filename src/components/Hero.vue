@@ -32,13 +32,13 @@ const images = [
 
           <!-- CTA Buttons -->
           <div class="flex flex-col sm:flex-row gap-4 pt-4">
-            <a href="#visi-misi"
+            <router-link to="/visi-misi"
               class="bg-white hover:bg-emerald-50 text-primary hover:text-emerald-700 font-semibold px-8 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl text-center inline-flex items-center justify-center">
               Visi & Misi
               <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
-            </a>
+            </router-link>
             <a href="#pendaftaran"
               class="bg-secondary hover:bg-secondary-dark text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl text-center inline-flex items-center justify-center">
               Penerimaan Siswa Baru

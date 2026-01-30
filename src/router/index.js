@@ -24,6 +24,11 @@ const router = createRouter({
       component: () => import("../views/Akreditasi.vue"),
     },
     {
+      path: "/visi-misi",
+      name: "VisiMisi",
+      component: () => import("../views/VisiMisi.vue"),
+    },
+    {
       path: "/sarana-prasarana",
       name: "SaranaPrasarana",
       component: () => import("../views/SaranaPrasarana.vue"),
