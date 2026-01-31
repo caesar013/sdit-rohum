@@ -32,6 +32,8 @@ const selectedYear = ref('all')
 // Alumni form data
 const alumniForm = ref({
     photo: null,
+    photoPreview: null,
+    nisn: '',
     full_name: '',
     graduation_year: '',
     birth_place: '',
@@ -62,9 +64,8 @@ const subjectOptions = ref([
 
 // Gender options
 const genderOptions = ref([
-    { value: '', label: 'Pilih Jenis Kelamin' },
-    { value: 'Laki-laki', label: 'Laki-laki' },
-    { value: 'Perempuan', label: 'Perempuan' }
+    { value: 'male', label: 'Laki-laki' },
+    { value: 'female', label: 'Perempuan' }
 ])
 
 // Alumni data from API
@@ -167,6 +168,8 @@ const handlePhotoUpload = (event) => {
     const file = event.target.files[0]
     if (file) {
         alumniForm.value.photo = file
+        // Create preview URL
+        alumniForm.value.photoPreview = URL.createObjectURL(file)
     }
 }
 
@@ -176,23 +179,45 @@ const submitAlumniForm = async () => {
         // Create FormData for file upload
         const formData = new FormData()
 
-        // Add all form fields
-        Object.keys(alumniForm.value).forEach(key => {
-            if (alumniForm.value[key]) {
-                formData.append(key, alumniForm.value[key])
-            }
-        })
+        // Add photo if uploaded
+        if (alumniForm.value.photo) {
+            formData.append('photo', alumniForm.value.photo)
+        }
+
+        // Add required fields
+        formData.append('nisn', alumniForm.value.nisn || '')
+        formData.append('name', alumniForm.value.full_name || '')
+        formData.append('graduation_year', alumniForm.value.graduation_year || '')
+        formData.append('gender', alumniForm.value.gender || '')
+        formData.append('phone', alumniForm.value.phone || '')
+        formData.append('email', alumniForm.value.email || '')
+
+        // Add optional fields only if they have values
+        if (alumniForm.value.current_address) formData.append('address', alumniForm.value.current_address) // Backend expects 'address'
+        if (alumniForm.value.current_occupation) formData.append('current_occupation', alumniForm.value.current_occupation)
+        if (alumniForm.value.current_institution) formData.append('current_school', alumniForm.value.current_institution) // Backend expects 'current_school'
+
+        // Log what we're sending
+        console.log('Form data being sent:')
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value)
+        }
 
         const response = await registerAlumni(formData)
+
+        console.log('API Response:', response)
 
         if (response.success) {
             alert('Pendaftaran alumni berhasil! Data Anda akan diverifikasi oleh admin.')
             closeAlumniForm()
             fetchAlumni() // Refresh list
+        } else {
+            alert(response.message || 'Gagal mendaftar sebagai alumni. Silakan coba lagi.')
         }
     } catch (error) {
-        console.error('Error submitting alumni form:', error)
-        alert('Gagal mendaftar sebagai alumni. Silakan coba lagi.')
+        console.error('Full error object:', error)
+        console.error('Error response:', error.response)
+        alert('Gagal mendaftar sebagai alumni. Silakan coba lagi. Error: ' + (error.message || 'Unknown error'))
     } finally {
         isSubmitting.value = false
     }
@@ -216,8 +241,15 @@ const submitContactForm = async () => {
 }
 
 const resetAlumniForm = () => {
+    // Revoke the preview URL to avoid memory leaks
+    if (alumniForm.value.photoPreview) {
+        URL.revokeObjectURL(alumniForm.value.photoPreview)
+    }
+
     alumniForm.value = {
         photo: null,
+        photoPreview: null,
+        nisn: '',
         full_name: '',
         graduation_year: '',
         birth_place: '',
@@ -451,17 +483,27 @@ onMounted(() => {
                                     class="w-32 h-32 rounded-full border-4 border-dashed border-neutral-300 overflow-hidden bg-neutral-50 flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
                                     <input type="file" accept="image/*" @change="handlePhotoUpload"
                                         class="absolute inset-0 opacity-0 cursor-pointer" />
-                                    <div v-if="!alumniForm.photo" class="text-center">
+                                    <div v-if="!alumniForm.photoPreview" class="text-center">
                                         <PhotoIcon class="w-12 h-12 mx-auto text-neutral-400 mb-2" />
                                         <span class="text-sm text-neutral-500">Upload Foto</span>
                                     </div>
-                                    <img v-else :src="alumniForm.photo" class="w-full h-full object-cover" />
+                                    <img v-else :src="alumniForm.photoPreview" class="w-full h-full object-cover" />
                                 </div>
                             </div>
                         </div>
 
                         <!-- Form Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- NISN -->
+                            <div>
+                                <label class="block text-sm font-semibold text-neutral-700 mb-2">
+                                    NISN <span class="text-red-500">*</span>
+                                </label>
+                                <input v-model="alumniForm.nisn" type="text" required
+                                    placeholder="Nomor Induk Siswa Nasional"
+                                    class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                            </div>
+
                             <!-- Nama Lengkap -->
                             <div>
                                 <label class="block text-sm font-semibold text-neutral-700 mb-2">
@@ -510,18 +552,18 @@ onMounted(() => {
                             <!-- Nomor Handphone -->
                             <div>
                                 <label class="block text-sm font-semibold text-neutral-700 mb-2">
-                                    Nomor Handphone
+                                    Nomor Handphone <span class="text-red-500">*</span>
                                 </label>
-                                <input v-model="alumniForm.phone" type="tel"
+                                <input v-model="alumniForm.phone" type="tel" required placeholder="08xxxxxxxxxx"
                                     class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
                             </div>
 
                             <!-- Jenis Kelamin -->
                             <div>
                                 <label class="block text-sm font-semibold text-neutral-700 mb-2">
-                                    Jenis Kelamin
+                                    Jenis Kelamin <span class="text-red-500">*</span>
                                 </label>
-                                <select v-model="alumniForm.gender"
+                                <select v-model="alumniForm.gender" required
                                     class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
                                     <option v-for="option in genderOptions" :key="option.value" :value="option.value">
                                         {{ option.label }}
