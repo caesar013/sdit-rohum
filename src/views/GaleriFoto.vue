@@ -35,10 +35,13 @@ const fetchAlbums = async () => {
             search: searchQuery.value || undefined
         }
 
+        console.log('Fetching albums with params:', params)
         const response = await getGalleryAlbums(params)
+        console.log('API Response:', response)
 
         if (response.success) {
             allAlbums.value = response.data
+            console.log('Albums data:', allAlbums.value)
             if (response.pagination) {
                 totalPages.value = response.pagination.totalPages
             }
@@ -79,7 +82,7 @@ const previousPage = () => {
 const openAlbum = async (album) => {
     try {
         // Fetch full album details with photos
-        const response = await getGalleryAlbum(album.id)
+        const response = await getGalleryAlbum(album.slug)
         if (response.success) {
             selectedAlbum.value = response.data
             currentPhotoIndex.value = 0

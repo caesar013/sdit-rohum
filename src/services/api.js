@@ -88,11 +88,11 @@ export const getVideoCategories = async () => {
 
 // ==================== PHOTO GALLERIES ====================
 export const getGalleryAlbums = async (params = {}) => {
-  return api.get("/gallery", { params });
+  return api.get("/gallery/albums", { params });
 };
 
-export const getGalleryAlbum = async (id) => {
-  return api.get(`/gallery/${id}`);
+export const getGalleryAlbum = async (slug) => {
+  return api.get(`/gallery/albums/slug/${slug}`);
 };
 
 // ==================== CONTACT ====================
