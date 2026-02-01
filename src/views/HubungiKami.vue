@@ -41,9 +41,9 @@ const submitSuccess = ref(false)
 const fetchContactInfo = async () => {
     try {
         // Fetch contact info from school profile
-        const phoneResponse = await getSchoolProfileByKey('contact_phone')
-        const emailResponse = await getSchoolProfileByKey('contact_email')
-        const addressResponse = await getSchoolProfileByKey('contact_address')
+        const phoneResponse = await getSchoolProfileByKey('phone')
+        const emailResponse = await getSchoolProfileByKey('email')
+        const addressResponse = await getSchoolProfileByKey('address')
         const mapResponse = await getSchoolProfileByKey('map_embed_url')
 
         if (phoneResponse.success) contactInfo.value.whatsapp = phoneResponse.data.value
@@ -95,7 +95,9 @@ const openWhatsApp = () => {
 }
 
 const openGoogleMaps = () => {
-    window.open('https://maps.google.com/?q=' + encodeURIComponent(contactInfo.value.fullAddress), '_blank')
+    // Convert embed URL to regular maps URL
+    const mapsUrl = contactInfo.value.mapEmbedUrl.replace('/embed', '')
+    window.open(mapsUrl, '_blank')
 }
 
 const openSocialMedia = (platform) => {

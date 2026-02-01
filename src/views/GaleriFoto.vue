@@ -112,7 +112,8 @@ const previousPhoto = () => {
 }
 
 const handleImageError = (event) => {
-    event.target.src = 'https://via.placeholder.com/800x600/0d5f5f/ffffff?text=Foto+Kegiatan'
+    // Use a simple SVG placeholder instead of external URL
+    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzBkNWY1ZiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5Gb3RvIFRpZGFrIFRlcnNlZGlhPC90ZXh0Pjwvc3ZnPg=='
 }
 
 const formatDate = (dateString) => {
