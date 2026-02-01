@@ -1,22 +1,19 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { BookOpenIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
-import { getSchoolProfileByKey } from '@/services/api'
 
-const isLoading = ref(false)
-
-// School history data
+// School history data - Static content
 const historyData = ref({
     title: 'Sejarah Sekolah',
-    subtitle: 'Perjalanan panjang SD Negeri Kedungrejo',
+    subtitle: 'Perjalanan Panjang SD IT Rohmatul Ummah',
     introduction: {
-        text: 'SD Negeri Kedungrejo memiliki sejarah panjang yang dimulai sejak tahun 1960. Berdiri dengan tekad untuk memberikan pendidikan berkualitas bagi anak-anak di wilayah Kedungrejo dan sekitarnya.'
+        text: 'SD IT Rohmatul Ummah memiliki sejarah panjang yang dimulai dengan tekad kuat untuk memberikan pendidikan berkualitas yang mengintegrasikan nilai-nilai Islam dalam setiap aspek pembelajaran. Berdiri dengan semangat untuk mencerdaskan generasi muda yang berakhlak mulia dan berprestasi.'
     },
     timeline: [
         {
             year: '1960',
             title: 'Pendirian Sekolah',
-            description: 'SD Negeri Kedungrejo didirikan pertama kali dengan fasilitas sederhana namun semangat yang tinggi untuk mencerdaskan anak bangsa.',
+            description: 'SD IT Rohmatul Ummah didirikan pertama kali dengan fasilitas sederhana namun semangat yang tinggi untuk mencerdaskan anak bangsa dengan pendidikan Islam yang berkualitas.',
             icon: 'foundation'
         },
         {
@@ -73,28 +70,6 @@ const historyData = ref({
             color: 'from-violet-400 to-violet-800'
         }
     ]
-})
-
-// Fetch school history from API
-const fetchHistory = async () => {
-    isLoading.value = true
-    try {
-        const response = await getSchoolProfileByKey('history')
-
-        if (response.success && response.data && response.data.value) {
-            // You can parse the history text or use it as introduction
-            historyData.value.introduction.text = response.data.value
-        }
-    } catch (error) {
-        console.error('Error fetching school history:', error)
-        // Keep default values on error
-    } finally {
-        isLoading.value = false
-    }
-}
-
-onMounted(() => {
-    fetchHistory()
 })
 </script>
 
