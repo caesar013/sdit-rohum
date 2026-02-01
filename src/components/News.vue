@@ -15,8 +15,7 @@ const fetchNews = async () => {
     try {
         const response = await getNews({
             page: 1,
-            limit: 5,
-            status: 'published'
+            limit: 5
         })
 
         if (response.success && response.data.length > 0) {

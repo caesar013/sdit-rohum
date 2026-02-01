@@ -127,7 +127,7 @@ const fetchAlumni = async () => {
         const params = {
             search: searchQuery.value || undefined,
             graduation_year: selectedYear.value !== 'all' ? selectedYear.value : undefined,
-            status: 'verified' // Can be changed to fetch all
+            registration_status: 'approved'
         }
 
         const response = await getAlumni(params)

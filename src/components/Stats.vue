@@ -56,7 +56,7 @@ const fetchStats = async () => {
 
         // Fetch alumni count
         try {
-            const alumniResponse = await getAlumni({ status: 'verified', limit: 1 })
+            const alumniResponse = await getAlumni({ registration_status: 'approved', limit: 1 })
             if (alumniResponse.success && alumniResponse.pagination) {
                 const count = alumniResponse.pagination.total
                 stats.value[2].value = count

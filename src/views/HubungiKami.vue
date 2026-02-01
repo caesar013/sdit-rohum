@@ -268,6 +268,24 @@ onMounted(() => {
                                 </div>
                             </div>
 
+                            <!-- Subjek -->
+                            <div>
+                                <label class="block text-sm font-semibold text-neutral-700 mb-2">
+                                    Subjek
+                                </label>
+                                <div class="relative">
+                                    <input v-model="contactForm.subject" type="text" required
+                                        placeholder="Subjek pesan Anda"
+                                        class="w-full pl-12 pr-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Pesan -->
                             <div>
                                 <label class="block text-sm font-semibold text-neutral-700 mb-2">

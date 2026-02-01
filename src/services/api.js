@@ -56,12 +56,12 @@ export const getNewsBySlug = async (slug) => {
   return api.get(`/news/slug/${slug}`);
 };
 
-export const getNewsById = async (id) => {
-  return api.get(`/news/${id}`);
-};
-
 export const getNewsCategories = async () => {
   return api.get("/news/categories");
+};
+
+export const getNewsStatuses = async () => {
+  return api.get("/news/statuses");
 };
 
 // ==================== NEWS COMMENTS ====================

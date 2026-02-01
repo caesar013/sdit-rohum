@@ -27,8 +27,7 @@ const fetchNews = async () => {
         const response = await getNews({
             page: currentPage.value,
             limit: itemsPerPage,
-            search: searchQuery.value,
-            status: 'published'
+            search: searchQuery.value
         })
 
         if (response.success) {
@@ -160,7 +159,8 @@ onMounted(() => {
                         class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col cursor-pointer">
                         <!-- Image -->
                         <div class="relative overflow-hidden h-48">
-                            <img :src="news.featured_image || '/placeholder-news.jpg'" :alt="news.title" @error="handleImageError"
+                            <img :src="news.featured_image || '/placeholder-news.jpg'" :alt="news.title"
+                                @error="handleImageError"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
 
                             <!-- Date Badge -->
