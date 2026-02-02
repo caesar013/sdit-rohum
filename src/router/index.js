@@ -1,5 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+// Auth guard function
+const requireAuth = (to, from, next) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    next();
+  } else {
+    next("/admin/login");
+  }
+};
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -72,6 +82,40 @@ const router = createRouter({
       path: "/hubungi-kami",
       name: "HubungiKami",
       component: () => import("../views/HubungiKami.vue"),
+    },
+    // Admin routes
+    {
+      path: "/admin/login",
+      name: "AdminLogin",
+      component: () => import("../admin/views/Login.vue"),
+    },
+    {
+      path: "/admin",
+      redirect: "/admin/dashboard",
+      component: () => import("../admin/layouts/AdminLayout.vue"),
+      beforeEnter: requireAuth,
+      children: [
+        {
+          path: "dashboard",
+          name: "AdminDashboard",
+          component: () => import("../admin/views/Dashboard.vue"),
+        },
+        {
+          path: "news",
+          name: "AdminNews",
+          component: () => import("../admin/views/news/NewsList.vue"),
+        },
+        {
+          path: "news/create",
+          name: "AdminNewsCreate",
+          component: () => import("../admin/views/news/NewsForm.vue"),
+        },
+        {
+          path: "news/edit/:id",
+          name: "AdminNewsEdit",
+          component: () => import("../admin/views/news/NewsForm.vue"),
+        },
+      ],
     },
   ],
   scrollBehavior(to, from, savedPosition) {

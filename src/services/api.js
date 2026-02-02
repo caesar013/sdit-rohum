@@ -38,6 +38,19 @@ api.interceptors.response.use(
   },
 );
 
+// ==================== AUTHENTICATION ====================
+export const login = async (credentials) => {
+  return api.post("/auth/login", credentials);
+};
+
+export const logout = async () => {
+  return api.post("/auth/logout");
+};
+
+export const getProfile = async () => {
+  return api.get("/auth/profile");
+};
+
 // ==================== SCHOOL PROFILE ====================
 export const getSchoolProfile = async () => {
   return api.get("/school-profile");

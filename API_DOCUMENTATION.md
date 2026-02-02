@@ -14,7 +14,7 @@ All admin endpoints require JWT authentication via `Authorization: Bearer <token
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| POST | `/api/auth/login` | Admin login with username/password | No |
+| POST | `/api/auth/login` | Admin login with email/password | No |
 | GET | `/api/auth/profile` | Get current authenticated user profile | Yes |
 | POST | `/api/auth/logout` | Logout and invalidate token | Yes |
 
