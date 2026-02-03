@@ -103,17 +103,7 @@ const router = createRouter({
         {
           path: "news",
           name: "AdminNews",
-          component: () => import("../admin/views/news/NewsList.vue"),
-        },
-        {
-          path: "news/create",
-          name: "AdminNewsCreate",
-          component: () => import("../admin/views/news/NewsForm.vue"),
-        },
-        {
-          path: "news/edit/:id",
-          name: "AdminNewsEdit",
-          component: () => import("../admin/views/news/NewsForm.vue"),
+          component: () => import("../admin/views/NewsList.vue"),
         },
       ],
     },
