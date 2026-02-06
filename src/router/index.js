@@ -105,6 +105,11 @@ const router = createRouter({
           name: "AdminNews",
           component: () => import("../admin/views/NewsList.vue"),
         },
+        {
+          path: "teachers",
+          name: "AdminTeachers",
+          component: () => import("../admin/views/TeachersList.vue"),
+        },
       ],
     },
   ],

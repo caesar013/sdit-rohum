@@ -303,4 +303,42 @@ export const deleteContact = async (id) => {
   return adminApi.delete(`/admin/contact/${id}`);
 };
 
+// ==================== TEACHERS MANAGEMENT ====================
+
+/**
+ * Get teacher status counts
+ */
+export const getTeacherStats = async () => {
+  return adminApi.get("/admin/teachers/stats");
+};
+
+/**
+ * Create new teacher
+ * @param {FormData} formData - Form data including name, nip, subject, status, and optional photo
+ */
+export const createTeacher = async (formData) => {
+  return adminApi.post("/admin/teachers", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Update teacher
+ * @param {number} id - Teacher ID
+ * @param {FormData} formData - Form data including name, nip, subject, status, and optional photo
+ */
+export const updateTeacher = async (id, formData) => {
+  return adminApi.put(`/admin/teachers/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Delete teacher
+ * @param {number} id - Teacher ID
+ */
+export const deleteTeacher = async (id) => {
+  return adminApi.delete(`/admin/teachers/${id}`);
+};
+
 export default adminApi;

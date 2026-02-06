@@ -232,23 +232,23 @@ onMounted(() => {
                         <div class="flex flex-wrap gap-6 text-sm text-neutral-600">
                             <div class="flex items-center">
                                 <CalendarIcon class="w-5 h-5 mr-2 text-primary" />
-                                {{ formatDate(article.created_at) }}
+                                {{ article.date }}
                             </div>
                             <div class="flex items-center">
                                 <UserIcon class="w-5 h-5 mr-2 text-primary" />
-                                {{ article.author || 'Admin' }}
+                                {{ article.author }}
                             </div>
                             <div class="flex items-center">
                                 <EyeIcon class="w-5 h-5 mr-2 text-primary" />
-                                {{ article.views || 0 }}
+                                {{ article.views }}
                             </div>
                         </div>
                     </div>
 
                     <!-- Featured Image -->
                     <div class="relative w-full h-96 md:h-125 overflow-hidden">
-                        <img :src="article.featured_image_url || article.featured_image || '/placeholder-news.jpg'"
-                            :alt="article.title" @error="handleImageError" class="w-full h-full object-cover" />
+                        <img :src="article.image" :alt="article.title" @error="handleImageError"
+                            class="w-full h-full object-cover" />
                     </div>
 
                     <!-- Article Body -->
@@ -359,15 +359,14 @@ onMounted(() => {
                             class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer">
                             <!-- Image -->
                             <div class="relative overflow-hidden h-48">
-                                <img :src="news.featured_image_url || news.featured_image || '/placeholder-news.jpg'"
-                                    :alt="news.title" @error="handleImageError"
+                                <img :src="news.image" :alt="news.title" @error="handleImageError"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                             </div>
 
                             <!-- Content -->
                             <div class="p-6">
                                 <div class="text-sm font-semibold text-primary mb-2">
-                                    {{ formatDate(news.created_at) }}
+                                    {{ news.date }}
                                 </div>
                                 <h3
                                     class="text-lg font-bold text-neutral-900 line-clamp-2 group-hover:text-primary transition-colors">

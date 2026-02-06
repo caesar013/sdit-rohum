@@ -359,8 +359,10 @@ onMounted(() => {
                             <div class="flex justify-center -mt-20 mb-4 relative z-10">
                                 <div
                                     class="w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
-                                    <img :src="teacher.photo" :alt="teacher.name" @error="handleImageError"
+                                    <img :src="teacher.photo_url"
+                                        :alt="teacher.name" @error="handleImageError"
                                         class="w-full h-full object-cover" />
+                                        {{console.log(teacher.photo_url) ? 'yes' : 'no'}}
                                 </div>
                             </div>
 
@@ -445,7 +447,8 @@ onMounted(() => {
                             <!-- Small Circular Photo -->
                             <div
                                 class="w-20 h-20 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white shrink-0">
-                                <img :src="selectedTeacher.photo" :alt="selectedTeacher.name" @error="handleImageError"
+                                <img :src="selectedTeacher.photo_url"
+                                    :alt="selectedTeacher.name" @error="handleImageError"
                                     class="w-full h-full object-cover" />
                             </div>
 
@@ -507,8 +510,9 @@ onMounted(() => {
                                 <div class="relative">
                                     <div
                                         class="aspect-3/4 rounded-2xl overflow-hidden shadow-xl border-4 border-primary/20">
-                                        <img :src="selectedTeacher.photo" :alt="selectedTeacher.name"
-                                            @error="handleImageError" class="w-full h-full object-cover" />
+                                        <img :src="selectedTeacher.photo_url"
+                                            :alt="selectedTeacher.name" @error="handleImageError"
+                                            class="w-full h-full object-cover" />
                                     </div>
                                     <!-- Status Badge Below Photo -->
                                     <div class="mt-4 flex justify-center">
