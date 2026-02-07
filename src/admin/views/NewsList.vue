@@ -8,6 +8,7 @@ const newsList = ref([])
 const isLoading = ref(false)
 const currentPage = ref(1)
 const totalPages = ref(1)
+const totalItems = ref(0)
 const searchQuery = ref('')
 const selectedCategory = ref('')
 
@@ -82,6 +83,7 @@ const fetchNews = async () => {
             if (response.pagination) {
                 totalPages.value = response.pagination.totalPages
                 currentPage.value = response.pagination.page
+                totalItems.value = response.pagination.total
             }
         }
     } catch (error) {
@@ -239,189 +241,133 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div>
-        <!-- Page Header -->
-        <div class="flex flex-wrap items-center justify-between mb-6 -mx-3">
-            <div class="w-full px-3 md:w-1/2">
-                <h1 class="text-3xl font-bold text-gray-800">News Management</h1>
-                <p class="text-gray-600">Manage all news articles</p>
-            </div>
-            <div class="w-full px-3 md:w-1/2 md:text-right">
+    <div class="p-6">
+        <!-- Header & Actions -->
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800 mb-2">News Management</h1>
+                    <p class="text-gray-600">Manage all news articles</p>
+                </div>
                 <button @click="openCreateModal"
-                    class="inline-flex items-center px-6 py-3 font-bold text-white transition-all bg-blue-500 rounded-lg hover:bg-blue-600 hover:shadow-lg">
-                    <PlusIcon class="w-5 h-5 mr-2" />
+                    class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors whitespace-nowrap">
+                    <PlusIcon class="w-5 h-5" />
                     Create News
                 </button>
             </div>
-        </div>
 
-        <!-- Filters -->
-        <div class="flex flex-wrap mb-6 -mx-3">
-            <div class="w-full px-3">
-                <div
-                    class="relative flex flex-col min-w-0 wrap-break-words bg-white shadow-xl rounded-2xl bg-clip-border">
-                    <div class="p-6">
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">Search</label>
-                                <input v-model="searchQuery" @keyup.enter="handleSearch" type="text"
-                                    placeholder="Search news..."
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">Category</label>
-                                <select v-model="selectedCategory" @change="handleSearch"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">All Categories</option>
-                                    <option v-for="cat in categories" :key="cat.value" :value="cat.value">
-                                        {{ cat.label }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">Status</label>
-                                <select v-model="selectedStatus" @change="handleSearch"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">All Status</option>
-                                    <option v-for="stat in statuses" :key="stat.value" :value="stat.value">
-                                        {{ stat.label }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block mb-2 text-sm font-medium text-gray-700">&nbsp;</label>
-                                <button @click="handleSearch"
-                                    class="w-full px-4 py-2 font-medium text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-600">
-                                    Search
-                                </button>
-                            </div>
-                        </div>
+            <!-- Filters -->
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <input v-model="searchQuery" @keyup.enter="handleSearch" type="text"
+                            placeholder="Search news..."
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                     </div>
                 </div>
+                <select v-model="selectedCategory" @change="handleSearch"
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">All Categories</option>
+                    <option v-for="cat in categories" :key="cat.value" :value="cat.value">
+                        {{ cat.label }}
+                    </option>
+                </select>
+                <select v-model="selectedStatus" @change="handleSearch"
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">All Status</option>
+                    <option v-for="stat in statuses" :key="stat.value" :value="stat.value">
+                        {{ stat.label }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Results Info -->
+            <div class="text-sm text-gray-600">
+                Menampilkan {{ newsList.length }} dari {{ totalItems }} berita
             </div>
         </div>
 
-        <!-- News Table -->
-        <div class="flex flex-wrap -mx-3">
-            <div class="flex-none w-full max-w-full px-3">
-                <div
-                    class="relative flex flex-col min-w-0 mb-6 wrap-break-words bg-white border-0 border-transparent border-solid shadow-xl rounded-2xl bg-clip-border">
-                    <div class="p-6 pb-0 mb-0 border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
-                        <h6 class="font-bold text-gray-800">News Articles</h6>
-                    </div>
-                    <div class="flex-auto px-0 pt-0 pb-2">
-                        <div class="p-0 overflow-x-auto">
-                            <table class="items-center w-full mb-0 align-top border-collapse text-slate-500">
-                                <thead class="align-bottom">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                                            Title
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                                            Category
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-collapse shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                                            Status
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-collapse shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                                            Views
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-collapse shadow-none text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                                            Date
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-collapse border-solid shadow-none tracking-none whitespace-nowrap text-slate-400 opacity-70">
-                                            Actions
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-if="isLoading">
-                                        <td colspan="6" class="px-6 py-4 text-center text-sm">
-                                            Loading...
-                                        </td>
-                                    </tr>
-                                    <tr v-else-if="newsList.length === 0">
-                                        <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
-                                            No news articles found
-                                        </td>
-                                    </tr>
-                                    <tr v-else v-for="news in newsList" :key="news.id">
-                                        <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap">
-                                            <div class="flex px-2 py-1">
-                                                <div class="flex flex-col justify-center">
-                                                    <h6 class="mb-0 text-sm leading-normal text-gray-800">{{ news.title
-                                                        }}</h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap">
-                                            <span class="text-xs font-semibold leading-tight text-slate-400">{{
-                                                news.category }}</span>
-                                        </td>
-                                        <td
-                                            class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap">
-                                            <span :class="getStatusColor(news.status)"
-                                                class="px-2 py-1 text-xs font-semibold rounded-full">
-                                                {{ news.status }}
-                                            </span>
-                                        </td>
-                                        <td
-                                            class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap">
-                                            <span class="text-xs font-semibold leading-tight text-slate-400">{{
-                                                news.views }}</span>
-                                        </td>
-                                        <td
-                                            class="p-2 text-center align-middle bg-transparent border-b whitespace-nowrap">
-                                            <span class="text-xs font-semibold leading-tight text-slate-400">{{
-                                                formatDate(news.created_at) }}</span>
-                                        </td>
-                                        <td class="p-2 align-middle bg-transparent border-b whitespace-nowrap">
-                                            <div class="flex items-center justify-center gap-2">
-                                                <button @click="openEditModal(news)"
-                                                    class="p-2 text-blue-600 transition-colors hover:text-blue-800"
-                                                    title="Edit">
-                                                    <PencilIcon class="w-5 h-5" />
-                                                </button>
-                                                <button @click="handleDelete(news.id)"
-                                                    class="p-2 text-red-600 transition-colors hover:text-red-800"
-                                                    title="Delete">
-                                                    <TrashIcon class="w-5 h-5" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+        <!-- Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Judul
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Kategori
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tanggal
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Aksi
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr v-if="isLoading">
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                Memuat data...
+                            </td>
+                        </tr>
+                        <tr v-else-if="newsList.length === 0">
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                Tidak ada data berita
+                            </td>
+                        </tr>
+                        <tr v-else v-for="news in newsList" :key="news.id" class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-900">{{ news.title }}</div>
+                                <div class="text-sm text-gray-500">{{ news.slug }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ news.category }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span :class="getStatusColor(news.status)"
+                                    class="px-2 py-1 text-xs font-semibold rounded-full">
+                                    {{ news.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ formatDate(news.created_at) }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button @click="openEditModal(news)" class="text-primary hover:text-primary-dark mr-3"
+                                    title="Edit">
+                                    <PencilIcon class="w-5 h-5" />
+                                </button>
+                                <button @click="handleDelete(news.id)" class="text-red-600 hover:text-red-900"
+                                    title="Hapus">
+                                    <TrashIcon class="w-5 h-5" />
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-                    <!-- Pagination -->
-                    <div v-if="totalPages > 1"
-                        class="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-                        <div class="text-sm text-gray-600">
-                            Page {{ currentPage }} of {{ totalPages }}
-                        </div>
-                        <div class="flex gap-2">
-                            <button @click="handlePageChange(currentPage - 1)" :disabled="currentPage === 1"
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                                Previous
-                            </button>
-                            <button v-for="page in totalPages" :key="page" @click="handlePageChange(page)"
-                                :class="page === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
-                                class="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg">
-                                {{ page }}
-                            </button>
-                            <button @click="handlePageChange(currentPage + 1)" :disabled="currentPage === totalPages"
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                                Next
-                            </button>
-                        </div>
+            <!-- Pagination -->
+            <div v-if="totalPages > 1" class="bg-gray-50 px-6 py-3 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Halaman {{ currentPage }} dari {{ totalPages }}
+                    </div>
+                    <div class="flex gap-2">
+                        <button @click="handlePageChange(currentPage - 1)" :disabled="currentPage === 1"
+                            class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Previous
+                        </button>
+                        <button @click="handlePageChange(currentPage + 1)" :disabled="currentPage === totalPages"
+                            class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Next
+                        </button>
                     </div>
                 </div>
             </div>
