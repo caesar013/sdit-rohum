@@ -341,4 +341,61 @@ export const deleteTeacher = async (id) => {
   return adminApi.delete(`/admin/teachers/${id}`);
 };
 
+// ==================== STUDENTS MANAGEMENT ====================
+
+/**
+ * Get all students (admin view)
+ * @param {Object} params - Query parameters (page, limit, academic_year, grade, status, gender)
+ */
+export const getAdminStudents = async (params = {}) => {
+  return adminApi.get("/students", { params });
+};
+
+/**
+ * Create new student
+ * @param {FormData} formData - Form data including nisn, name, gender, birth_date, address, parent_name, parent_phone, status, and optional photo
+ */
+export const createStudent = async (formData) => {
+  return adminApi.post("/admin/students", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Update student
+ * @param {number} id - Student ID
+ * @param {FormData} formData - Form data including nisn, name, gender, birth_date, address, parent_name, parent_phone, status, and optional photo
+ */
+export const updateStudent = async (id, formData) => {
+  return adminApi.put(`/admin/students/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Delete student
+ * @param {number} id - Student ID
+ */
+export const deleteStudent = async (id) => {
+  return adminApi.delete(`/admin/students/${id}`);
+};
+
+/**
+ * Enroll student in class
+ * @param {number} id - Student ID
+ * @param {Object} data - { class_id: number }
+ */
+export const enrollStudent = async (id, data) => {
+  return adminApi.post(`/admin/students/${id}/enroll`, data);
+};
+
+/**
+ * Unenroll student from class
+ * @param {number} studentId - Student ID
+ * @param {number} classId - Class ID
+ */
+export const unenrollStudent = async (studentId, classId) => {
+  return adminApi.delete(`/admin/students/${studentId}/enroll/${classId}`);
+};
+
 export default adminApi;

@@ -110,6 +110,11 @@ const router = createRouter({
           name: "AdminTeachers",
           component: () => import("../admin/views/TeachersList.vue"),
         },
+        {
+          path: "students",
+          name: "AdminStudents",
+          component: () => import("../admin/views/StudentsList.vue"),
+        },
       ],
     },
   ],
