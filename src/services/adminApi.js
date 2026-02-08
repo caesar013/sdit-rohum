@@ -435,4 +435,49 @@ export const deleteAlumni = async (id) => {
   return adminApi.delete(`/admin/alumni/${id}`);
 };
 
+// ==================== FACILITIES MANAGEMENT ====================
+
+/**
+ * Get facility counts by category
+ */
+export const getFacilityCategoryStats = async () => {
+  return adminApi.get("/admin/facilities/category-stats");
+};
+
+/**
+ * Get facility counts by condition
+ */
+export const getFacilityConditionStats = async () => {
+  return adminApi.get("/admin/facilities/condition-stats");
+};
+
+/**
+ * Create new facility
+ * @param {FormData} formData - Form data including name, category, quantity, condition, description, and optional photo
+ */
+export const createFacility = async (formData) => {
+  return adminApi.post("/admin/facilities", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Update facility
+ * @param {number} id - Facility ID
+ * @param {FormData} formData - Form data including name, category, quantity, condition, description, and optional photo
+ */
+export const updateFacility = async (id, formData) => {
+  return adminApi.put(`/admin/facilities/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Delete facility
+ * @param {number} id - Facility ID
+ */
+export const deleteFacility = async (id) => {
+  return adminApi.delete(`/admin/facilities/${id}`);
+};
+
 export default adminApi;

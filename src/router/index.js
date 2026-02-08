@@ -120,6 +120,11 @@ const router = createRouter({
           name: "AdminAlumni",
           component: () => import("../admin/views/AlumniList.vue"),
         },
+        {
+          path: "facilities",
+          name: "AdminFacilities",
+          component: () => import("../admin/views/FacilitiesList.vue"),
+        },
       ],
     },
   ],
