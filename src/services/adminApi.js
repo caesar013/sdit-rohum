@@ -398,4 +398,41 @@ export const unenrollStudent = async (studentId, classId) => {
   return adminApi.delete(`/admin/students/${studentId}/enroll/${classId}`);
 };
 
+// ==================== ALUMNI MANAGEMENT ====================
+
+/**
+ * Get alumni status counts
+ */
+export const getAlumniStatusCounts = async () => {
+  return adminApi.get("/admin/alumni/status-counts");
+};
+
+/**
+ * Update alumni
+ * @param {number} id - Alumni ID
+ * @param {FormData} formData - Form data including name, nisn, gender, graduation_year, etc., and optional photo
+ */
+export const updateAlumni = async (id, formData) => {
+  return adminApi.put(`/admin/alumni/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Update alumni registration status
+ * @param {number} id - Alumni ID
+ * @param {Object} data - { registration_status: 'pending' | 'approved' | 'rejected' }
+ */
+export const updateAlumniStatus = async (id, data) => {
+  return adminApi.put(`/admin/alumni/${id}/status`, data);
+};
+
+/**
+ * Delete alumni
+ * @param {number} id - Alumni ID
+ */
+export const deleteAlumni = async (id) => {
+  return adminApi.delete(`/admin/alumni/${id}`);
+};
+
 export default adminApi;
