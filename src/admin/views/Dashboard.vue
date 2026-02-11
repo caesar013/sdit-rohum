@@ -1,5 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useSchoolProfile } from '@/services/schoolProfile'
+
+const { schoolProfile } = useSchoolProfile()
 
 const stats = ref([
     { title: 'Total News', value: '0', icon: '📰', color: 'bg-gradient-to-br from-blue-400 to-blue-600' },
@@ -19,7 +22,7 @@ onMounted(() => {
         <div class="flex flex-wrap -mx-3 mb-6">
             <div class="w-full px-3">
                 <h1 class="text-3xl font-bold text-gray-800 mb-2">Dashboard</h1>
-                <p class="text-gray-600">Welcome to SD IT Rohmatul Ummah Admin Panel</p>
+                <p class="text-gray-600">Welcome to {{ schoolProfile.school_name }} Admin Panel</p>
             </div>
         </div>
 

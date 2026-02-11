@@ -8,6 +8,9 @@ import {
     XMarkIcon
 } from '@heroicons/vue/24/outline'
 import { getTeachers } from '@/services/api'
+import { useSchoolProfile } from '@/services/schoolProfile'
+
+const { schoolProfile } = useSchoolProfile()
 
 // Modal state
 const showModal = ref(false)
@@ -269,47 +272,41 @@ onMounted(() => {
         <section class="bg-linear-to-br from-primary to-primary-dark py-20 px-4">
             <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    Direktori GTK
+                    Guru dan Tenaga Kependidikan
                 </h1>
-                <p class="text-xl text-white/90">
-                    Daftar Pendidik dan Tenaga Kependidikan SD Negeri Kedungrejo
+                <p class="text-xl text-white/90 mb-8">
+                    Daftar Guru dan Tenaga Kependidikan {{ schoolProfile.school_name }}
                 </p>
-            </div>
-        </section>
 
-        <!-- Search and Filter Section -->
-        <section class="py-8 px-4 -mt-12 relative z-10">
-            <div class="max-w-7xl mx-auto">
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    <div class="flex flex-col md:flex-row gap-4">
-
-                        <!-- Search Bar -->
-                        <div class="grow">
-                            <div class="relative">
-                                <MagnifyingGlassIcon
-                                    class="w-5 h-5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                                <input v-model="searchQuery" @input="handleSearch" type="text"
-                                    placeholder="Cari GTK (Nama/NIP)..."
-                                    class="w-full pl-12 pr-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                            </div>
-                        </div>
-
-                        <!-- Status Filter -->
-                        <div class="md:w-64">
-                            <select v-model="selectedStatus" @change="handleStatusChange"
-                                class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
-                                <option v-for="status in statusOptions" :key="status.value" :value="status.value">
-                                    {{ status.label }}
-                                </option>
-                            </select>
-                        </div>
-
-                    </div>
+                <!-- Search Bar -->
+                <div class="max-w-2xl mx-auto">
+                    <form @submit.prevent="handleSearch" class="relative">
+                        <input v-model="searchQuery" type="text" placeholder="Cari nama guru..."
+                            class="w-full px-6 py-4 pr-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/20 transition-all" />
+                        <button type="submit"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 p-3 rounded-full transition-colors cursor-pointer">
+                            <MagnifyingGlassIcon class="w-5 h-5 text-white" />
+                        </button>
+                    </form>
                 </div>
             </div>
         </section>
 
-        <!-- Teachers Grid -->
+        <!-- Filter Section -->
+        <section class="py-8 bg-white border-b -mt-12 relative z-10">
+            <div class="container mx-auto px-4">
+                <div class="max-w-6xl mx-auto flex justify-center">
+                    <select v-model="selectedStatus" @change="handleStatusChange"
+                        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option v-for="status in statusOptions" :key="status.value" :value="status.value">
+                            {{ status.label }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Teachers Grid Section -->
         <section class="py-12 px-4">
             <div class="max-w-7xl mx-auto">
 

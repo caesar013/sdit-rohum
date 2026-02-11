@@ -1,4 +1,8 @@
 <script setup>
+import { useSchoolProfile } from '@/services/schoolProfile'
+
+const { schoolProfile } = useSchoolProfile()
+
 const quickLinks = [
   { name: 'Tentang Kami', href: '#tentang' },
   { name: 'Program', href: '#program' },
@@ -20,7 +24,7 @@ const contactInfo = [
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
         <!-- About Column -->
         <div>
-          <h3 class="text-2xl font-bold text-secondary mb-4">SD IT Rohmatul Ummah</h3>
+          <h3 class="text-2xl font-bold text-secondary mb-4">{{ schoolProfile.school_name }}</h3>
           <p class="text-neutral-300">
             Beriman, Kreatif, Berprestasi, Berkarakter, dan Berbudaya. Membentuk generasi unggul dengan pendidikan
             berkualitas.
@@ -53,7 +57,7 @@ const contactInfo = [
       <!-- Copyright -->
       <div class="border-t border-neutral-700 pt-8 text-center">
         <p class="text-neutral-400">
-          &copy; {{ new Date().getFullYear() }} SD IT Rohmatul Ummah. Hak Cipta Dilindungi.
+          &copy; {{ new Date().getFullYear() }} {{ schoolProfile.school_name }}. Hak Cipta Dilindungi.
         </p>
       </div>
     </div>

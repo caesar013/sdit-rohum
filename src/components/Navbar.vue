@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import { useSchoolProfile } from '@/services/schoolProfile'
+
+const { schoolProfile } = useSchoolProfile()
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -15,6 +18,7 @@ const navLinks = [
     ]
   },
   { name: 'Berita', href: '/berita' },
+  { name: 'Prestasi', href: '/prestasi' },
   {
     name: 'Direktori',
     href: '#direktori',
@@ -48,7 +52,7 @@ const navLinks = [
             <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
               SD
             </div>
-            <span class="text-lg font-semibold text-white">SD IT Rohmatul Ummah</span>
+            <span class="text-lg font-semibold text-white">{{ schoolProfile.school_name }}</span>
           </router-link>
         </div>
 

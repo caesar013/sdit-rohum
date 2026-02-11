@@ -1,4 +1,8 @@
 <script setup>
+import { useSchoolProfile } from '@/services/schoolProfile'
+
+const { schoolProfile } = useSchoolProfile()
+
 const images = [
   // '/placeholder-school-1.jpg',
   // '/placeholder-school-2.jpg',
@@ -22,7 +26,7 @@ const images = [
           <!-- Main Headline -->
           <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
             Selamat Datang di<br>
-            <span class="text-primary-light">SD IT Rohmatul Ummah</span>
+            <span class="text-primary-light">{{ schoolProfile.school_name }}</span>
           </h1>
 
           <!-- Tagline -->
