@@ -480,4 +480,49 @@ export const deleteFacility = async (id) => {
   return adminApi.delete(`/admin/facilities/${id}`);
 };
 
+// ==================== ACHIEVEMENTS MANAGEMENT ====================
+
+/**
+ * Get achievement counts by category
+ */
+export const getAchievementCategoryStats = async () => {
+  return adminApi.get("/admin/achievements/category-stats");
+};
+
+/**
+ * Get achievement counts by level
+ */
+export const getAchievementLevelStats = async () => {
+  return adminApi.get("/admin/achievements/level-stats");
+};
+
+/**
+ * Create new achievement
+ * @param {FormData} formData - Form data including title, description, category, level, achievement_date, year, and optional certificate_image
+ */
+export const createAchievement = async (formData) => {
+  return adminApi.post("/admin/achievements", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Update achievement
+ * @param {number} id - Achievement ID
+ * @param {FormData} formData - Form data including title, description, category, level, achievement_date, year, and optional certificate_image
+ */
+export const updateAchievement = async (id, formData) => {
+  return adminApi.put(`/admin/achievements/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Delete achievement
+ * @param {number} id - Achievement ID
+ */
+export const deleteAchievement = async (id) => {
+  return adminApi.delete(`/admin/achievements/${id}`);
+};
+
 export default adminApi;

@@ -79,6 +79,11 @@ const router = createRouter({
       component: () => import("../views/GaleriVideo.vue"),
     },
     {
+      path: "/prestasi",
+      name: "Prestasi",
+      component: () => import("../views/Prestasi.vue"),
+    },
+    {
       path: "/hubungi-kami",
       name: "HubungiKami",
       component: () => import("../views/HubungiKami.vue"),
@@ -124,6 +129,11 @@ const router = createRouter({
           path: "facilities",
           name: "AdminFacilities",
           component: () => import("../admin/views/FacilitiesList.vue"),
+        },
+        {
+          path: "achievements",
+          name: "AdminAchievements",
+          component: () => import("../admin/views/AchievementsList.vue"),
         },
       ],
     },
