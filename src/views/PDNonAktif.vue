@@ -11,6 +11,9 @@ import {
     ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 import { getAlumni, registerAlumni, getAlumniGraduationYears, submitContact } from '@/services/api'
+import { useSchoolProfile } from '@/services/schoolProfile'
+
+const { schoolProfile } = useSchoolProfile()
 
 // Modals state
 const showAlumniFormModal = ref(false)
@@ -289,71 +292,40 @@ onMounted(() => {
         <section class="bg-linear-to-br from-primary to-primary-dark py-20 px-4">
             <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    Direktori PD Non Aktif
+                    Alumni / PD Non Aktif
                 </h1>
-                <p class="text-xl text-white/90">
-                    Daftar Peserta Didik Non Aktif dan Alumni SD Negeri Kedungrejo
+                <p class="text-xl text-white/90 mb-8">
+                    Daftar Peserta Didik Non Aktif dan Alumni {{ schoolProfile.school_name }}
                 </p>
-            </div>
-        </section>
 
-        <!-- Alumni Network Banner -->
-        <section class="py-8 px-4 -mt-12 relative z-10">
-            <div class="max-w-7xl mx-auto">
-                <div class="bg-linear-to-r from-blue-600 to-blue-700 rounded-3xl shadow-2xl p-8 md:p-12">
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div class="text-white">
-                            <h2 class="text-3xl font-bold mb-3">Alumni Network</h2>
-                            <p class="text-blue-100 text-lg">
-                                Temukan dan terhubung dengan alumni SD Negeri Kedungrejo lainnya.<br />
-                                Jalin jaringan profesional dan kenangan masa sekolah.
-                            </p>
-                        </div>
-                        <button @click="openAlumniForm"
-                            class="shrink-0 bg-white hover:bg-blue-50 text-blue-700 font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 cursor-pointer">
-                            <PlusCircleIcon class="w-6 h-6" />
-                            Daftar Sebagai Alumni
-                        </button>
+                <!-- Search Bar -->
+                <div class="max-w-2xl mx-auto">
+                    <div class="relative">
+                        <input v-model="searchQuery" @input="handleSearch" type="text"
+                            placeholder="Cari alumni (Nama/NISN)..."
+                            class="w-full px-6 py-4 pr-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/20 transition-all" />
+                        <MagnifyingGlassIcon class="w-5 h-5 text-white absolute right-6 top-1/2 -translate-y-1/2" />
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Search and Filter Section -->
-        <section class="py-8 px-4">
-            <div class="max-w-7xl mx-auto">
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    <div class="flex flex-col md:flex-row gap-4">
+        <!-- Filter and Actions Section -->
+        <section class="py-8 bg-white border-b -mt-12 relative z-10">
+            <div class="container mx-auto px-4">
+                <div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-4 justify-center items-center">
+                    <select v-model="selectedYear"
+                        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option v-for="year in years" :key="year.value" :value="year.value">
+                            {{ year.label }}
+                        </option>
+                    </select>
 
-                        <!-- Search Bar -->
-                        <div class="grow">
-                            <div class="relative">
-                                <MagnifyingGlassIcon
-                                    class="w-5 h-5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                                <input v-model="searchQuery" @input="handleSearch" type="text"
-                                    placeholder="Cari alumni berdasarkan nama..."
-                                    class="w-full pl-12 pr-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                            </div>
-                        </div>
-
-                        <!-- Year Filter -->
-                        <div class="md:w-48">
-                            <select v-model="selectedYear" @change="handleSearch"
-                                class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
-                                <option v-for="year in years" :key="year.value" :value="year.value">
-                                    {{ year.label }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- Contact Admin Button -->
-                        <button @click="openContactAdmin"
-                            class="md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                            <EnvelopeIcon class="w-5 h-5" />
-                            Hubungi Admin
-                        </button>
-
-                    </div>
+                    <button @click="openAlumniForm"
+                        class="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                        <PlusCircleIcon class="w-5 h-5" />
+                        Daftar Sebagai Alumni
+                    </button>
                 </div>
             </div>
         </section>

@@ -136,35 +136,20 @@ onMounted(() => {
 <template>
     <div class="min-h-screen bg-neutral-50">
         <!-- Hero Section -->
-        <section class="bg-linear-to-br from-primary to-primary-dark py-20 px-4">
+        <section class="bg-gradient-to-br from-primary to-primary-dark py-20 px-4">
             <div class="max-w-4xl mx-auto text-center">
-                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
                     Galeri Foto
                 </h1>
-                <p class="text-xl text-white/90">
+                <p class="text-xl text-white/90 mb-8">
                     Kumpulan dokumentasi kegiatan dalam bentuk foto
                 </p>
-            </div>
-        </section>
-
-        <!-- Search Section -->
-        <section class="py-8 px-4 -mt-12 relative z-10">
-            <div class="max-w-7xl mx-auto">
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    <div class="flex gap-4">
-                        <div class="grow">
-                            <div class="relative">
-                                <MagnifyingGlassIcon
-                                    class="w-5 h-5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                                <input v-model="searchQuery" @input="handleSearch" type="text"
-                                    placeholder="Cari album foto..."
-                                    class="w-full pl-12 pr-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
-                            </div>
-                        </div>
-                        <button @click="handleSearch"
-                            class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors cursor-pointer">
-                            Cari
-                        </button>
+                <!-- Search Bar -->
+                <div class="max-w-2xl mx-auto">
+                    <div class="relative">
+                        <MagnifyingGlassIcon class="w-5 h-5 text-white/70 absolute left-4 top-1/2 -translate-y-1/2" />
+                        <input v-model="searchQuery" @input="handleSearch" type="text" placeholder="Cari album foto..."
+                            class="w-full pl-12 pr-4 py-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50" />
                     </div>
                 </div>
             </div>

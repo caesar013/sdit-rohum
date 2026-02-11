@@ -5,6 +5,9 @@ import {
     MagnifyingGlassCircleIcon
 } from '@heroicons/vue/24/outline'
 import { getStudents, getAcademicYears } from '@/services/api'
+import { useSchoolProfile } from '@/services/schoolProfile'
+
+const { schoolProfile } = useSchoolProfile()
 
 // Filter options
 const academicYears = ref([
@@ -97,54 +100,35 @@ onMounted(() => {
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
                     Direktori Peserta Didik
                 </h1>
-                <p class="text-xl text-white/90">
-                    Daftar Peserta Didik SD Negeri Kedungrejo
+                <p class="text-xl text-white/90 mb-8">
+                    Daftar Peserta Didik {{ schoolProfile.school_name }}
                 </p>
             </div>
         </section>
 
         <!-- Filter Section -->
-        <section class="py-8 px-4 -mt-12 relative z-10">
-            <div class="max-w-6xl mx-auto">
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <section class="py-8 bg-white border-b -mt-12 relative z-10">
+            <div class="container mx-auto px-4">
+                <div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-4 justify-center items-center">
+                    <select v-model="selectedYear"
+                        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option v-for="year in academicYears" :key="year.value" :value="year.value">
+                            {{ year.label }}
+                        </option>
+                    </select>
 
-                        <!-- Tahun Pelajaran -->
-                        <div>
-                            <label class="block text-sm font-semibold text-neutral-700 mb-2">
-                                Tahun Pelajaran
-                            </label>
-                            <select v-model="selectedYear"
-                                class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
-                                <option v-for="year in academicYears" :key="year.value" :value="year.value">
-                                    {{ year.label }}
-                                </option>
-                            </select>
-                        </div>
+                    <select v-model="selectedClass"
+                        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option v-for="cls in classes" :key="cls.value" :value="cls.value">
+                            {{ cls.label }}
+                        </option>
+                    </select>
 
-                        <!-- Kelas -->
-                        <div>
-                            <label class="block text-sm font-semibold text-neutral-700 mb-2">
-                                Kelas
-                            </label>
-                            <select v-model="selectedClass"
-                                class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
-                                <option v-for="cls in classes" :key="cls.value" :value="cls.value">
-                                    {{ cls.label }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- Tampilkan Button -->
-                        <div>
-                            <button @click="handleSearch"
-                                class="w-full px-6 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer">
-                                <MagnifyingGlassCircleIcon class="w-5 h-5 mr-2" />
-                                Tampilkan
-                            </button>
-                        </div>
-
-                    </div>
+                    <button @click="handleSearch"
+                        class="px-6 py-2 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-colors flex items-center gap-2 cursor-pointer">
+                        <MagnifyingGlassCircleIcon class="w-5 h-5" />
+                        Tampilkan
+                    </button>
                 </div>
             </div>
         </section>
