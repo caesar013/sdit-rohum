@@ -183,84 +183,6 @@ export const deleteVideo = async (id) => {
   return adminApi.delete(`/admin/videos/${id}`);
 };
 
-// ==================== PHOTO GALLERIES MANAGEMENT ====================
-
-/**
- * Get album by ID
- * @param {number} id - Album ID
- */
-export const getAdminAlbumById = async (id) => {
-  return adminApi.get(`/admin/gallery/albums/${id}`);
-};
-
-/**
- * Create new photo album
- * @param {FormData} formData - Form data including title, description, and optional cover_image
- */
-export const createAlbum = async (formData) => {
-  return adminApi.post("/admin/gallery/albums", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-};
-
-/**
- * Update photo album
- * @param {number} id - Album ID
- * @param {FormData} formData - Form data including title, description, and optional cover_image
- */
-export const updateAlbum = async (id, formData) => {
-  return adminApi.put(`/admin/gallery/albums/${id}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-};
-
-/**
- * Delete photo album and all its photos
- * @param {number} id - Album ID
- */
-export const deleteAlbum = async (id) => {
-  return adminApi.delete(`/admin/gallery/albums/${id}`);
-};
-
-/**
- * Add photo to album
- * @param {number} albumId - Album ID
- * @param {FormData} formData - Form data including caption and photo file
- */
-export const addPhotoToAlbum = async (albumId, formData) => {
-  return adminApi.post(`/admin/gallery/albums/${albumId}/photos`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-};
-
-/**
- * Update photo
- * @param {number} id - Photo ID
- * @param {FormData} formData - Form data including caption and optional photo file
- */
-export const updatePhoto = async (id, formData) => {
-  return adminApi.put(`/admin/gallery/photos/${id}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-};
-
-/**
- * Delete photo from album
- * @param {number} id - Photo ID
- */
-export const deletePhoto = async (id) => {
-  return adminApi.delete(`/admin/gallery/photos/${id}`);
-};
-
-/**
- * Reorder photos in album
- * @param {number} albumId - Album ID
- * @param {Object} data - { photo_ids: [1, 2, 3, ...] }
- */
-export const reorderPhotos = async (albumId, data) => {
-  return adminApi.put(`/admin/gallery/albums/${albumId}/photos/reorder`, data);
-};
-
 // ==================== CONTACT MESSAGES MANAGEMENT ====================
 
 /**
@@ -523,6 +445,84 @@ export const updateAchievement = async (id, formData) => {
  */
 export const deleteAchievement = async (id) => {
   return adminApi.delete(`/admin/achievements/${id}`);
+};
+
+// ==================== PHOTO GALLERIES MANAGEMENT ====================
+
+/**
+ * Get album by ID
+ * @param {number} id - Album ID
+ */
+export const getAlbumById = async (id) => {
+  return adminApi.get(`/admin/gallery/albums/${id}`);
+};
+
+/**
+ * Create new photo album
+ * @param {FormData} formData - Form data including title, description, album_date, and optional cover_photo
+ */
+export const createAlbum = async (formData) => {
+  return adminApi.post("/admin/gallery/albums", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Update photo album
+ * @param {number} id - Album ID
+ * @param {FormData} formData - Form data including title, description, album_date, and optional cover_photo
+ */
+export const updateAlbum = async (id, formData) => {
+  return adminApi.put(`/admin/gallery/albums/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Delete photo album and all photos
+ * @param {number} id - Album ID
+ */
+export const deleteAlbum = async (id) => {
+  return adminApi.delete(`/admin/gallery/albums/${id}`);
+};
+
+/**
+ * Add photo to album
+ * @param {number} albumId - Album ID
+ * @param {FormData} formData - Form data including photo, caption, display_order
+ */
+export const addPhotoToAlbum = async (albumId, formData) => {
+  return adminApi.post(`/admin/gallery/albums/${albumId}/photos`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Update photo
+ * @param {number} id - Photo ID
+ * @param {FormData} formData - Form data including optional photo, caption, display_order
+ */
+export const updatePhoto = async (id, formData) => {
+  return adminApi.put(`/admin/gallery/photos/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+/**
+ * Delete photo from album
+ * @param {number} id - Photo ID
+ */
+export const deletePhoto = async (id) => {
+  return adminApi.delete(`/admin/gallery/photos/${id}`);
+};
+
+/**
+ * Reorder photos in album
+ * @param {number} albumId - Album ID
+ * @param {Object} data - { photos: Array<{id, display_order}> }
+ */
+export const reorderPhotos = async (albumId, data) => {
+  return adminApi.put(`/admin/gallery/albums/${albumId}/photos/reorder`, data);
 };
 
 export default adminApi;

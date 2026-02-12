@@ -135,6 +135,11 @@ const router = createRouter({
           name: "AdminAchievements",
           component: () => import("../admin/views/AchievementsList.vue"),
         },
+        {
+          path: "photo-albums",
+          name: "AdminPhotoAlbums",
+          component: () => import("../admin/views/PhotoAlbumsList.vue"),
+        },
       ],
     },
   ],

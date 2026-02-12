@@ -29,7 +29,7 @@ const menuItems = [
     { name: 'Alumni', path: '/admin/alumni', icon: AcademicCapIcon },
     { name: 'Facilities', path: '/admin/facilities', icon: BuildingLibraryIcon },
     { name: 'Achievements', path: '/admin/achievements', icon: TrophyIcon },
-    { name: 'Photo Gallery', path: '/admin/gallery', icon: PhotoIcon },
+    { name: 'Photo Albums', path: '/admin/photo-albums', icon: PhotoIcon },
     { name: 'Videos', path: '/admin/videos', icon: VideoCameraIcon },
     { name: 'Contact Messages', path: '/admin/contact', icon: EnvelopeIcon },
     { name: 'Comments', path: '/admin/comments', icon: ChatBubbleLeftRightIcon },

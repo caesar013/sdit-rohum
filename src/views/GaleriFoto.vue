@@ -136,7 +136,7 @@ onMounted(() => {
 <template>
     <div class="min-h-screen bg-neutral-50">
         <!-- Hero Section -->
-        <section class="bg-gradient-to-br from-primary to-primary-dark py-20 px-4">
+        <section class="bg-linear-to-br from-primary to-primary-dark py-20 px-4">
             <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
                     Galeri Foto
@@ -184,7 +184,7 @@ onMounted(() => {
                 <!-- Albums Grid -->
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div v-for="album in allAlbums" :key="album.id"
-                        class="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer">
+                        class="bg-white rounded-2xl shadow-lg overflow-hidden group">
                         <!-- Album Cover with Overlay -->
                         <div class="relative overflow-hidden aspect-video">
                             <img :src="album.cover_photo || album.coverImage" :alt="album.title"
@@ -199,7 +199,7 @@ onMounted(() => {
                                     {{ album.description }}
                                 </p>
                                 <button @click="openAlbum(album)"
-                                    class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2">
+                                    class="px-6 py-3 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-semibold rounded-lg transition-colors flex items-center gap-2">
                                     <PhotoIcon class="w-5 h-5" />
                                     Lihat Album
                                 </button>
@@ -210,7 +210,7 @@ onMounted(() => {
                         <div class="p-6">
                             <div class="flex items-center gap-2 text-sm text-neutral-500 mb-2">
                                 <CalendarIcon class="w-4 h-4" />
-                                <span>{{ formatDate(album.created_at || album.date) }}</span>
+                                <span>{{ formatDate(album.album_date || album.created_at) }}</span>
                             </div>
                             <div class="flex items-center gap-2 text-sm text-blue-600 font-semibold">
                                 <PhotoIcon class="w-4 h-4" />
