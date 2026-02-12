@@ -8,11 +8,11 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon
 } from '@heroicons/vue/24/outline'
-import { getVideos } from '@/services/api'
+import { getVideos, getVideoPlatforms } from '@/services/api'
 
 // Search and filter
 const searchQuery = ref('')
-const selectedCategory = ref('all')
+const selectedPlatform = ref('all')
 const currentPage = ref(1)
 const itemsPerPage = 6
 
@@ -20,14 +20,22 @@ const itemsPerPage = 6
 const allVideos = ref([])
 const totalPages = ref(1)
 const isLoading = ref(false)
-const categories = ref([
-    { value: 'all', label: 'Semua Kategori' },
-    { value: 'profile', label: 'Profil Sekolah' },
-    { value: 'activity', label: 'Kegiatan' },
-    { value: 'achievement', label: 'Prestasi' },
-    { value: 'event', label: 'Acara' },
-    { value: 'other', label: 'Lainnya' }
-])
+const platformOptions = ref([])
+
+// Fetch platforms
+const fetchPlatforms = async () => {
+    try {
+        const response = await getVideoPlatforms()
+        if (response.success) {
+            platformOptions.value = [
+                { value: 'all', label: 'Semua Platform' },
+                ...response.data
+            ]
+        }
+    } catch (error) {
+        console.error('Error fetching platforms:', error)
+    }
+}
 
 // Fetch videos from API
 const fetchVideos = async () => {
@@ -37,7 +45,7 @@ const fetchVideos = async () => {
             page: currentPage.value,
             limit: itemsPerPage,
             search: searchQuery.value || undefined,
-            category: selectedCategory.value !== 'all' ? selectedCategory.value : undefined
+            platform: selectedPlatform.value !== 'all' ? selectedPlatform.value : undefined
         }
 
         const response = await getVideos(params)
@@ -62,7 +70,7 @@ const handleSearch = () => {
     fetchVideos()
 }
 
-const handleCategoryChange = () => {
+const handlePlatformChange = () => {
     currentPage.value = 1
     fetchVideos()
 }
@@ -88,8 +96,8 @@ const previousPage = () => {
 
 const handleVideoClick = (video) => {
     // Open video URL in new tab
-    if (video.url) {
-        window.open(video.url, '_blank')
+    if (video.video_url) {
+        window.open(video.video_url, '_blank')
     }
 }
 
@@ -110,8 +118,8 @@ const getVideoThumbnail = (video) => {
     }
 
     // Generate thumbnail from URL if platform is YouTube
-    if (video.platform === 'youtube' && video.url) {
-        const videoId = extractYouTubeId(video.url)
+    if (video.platform === 'youtube' && video.video_url) {
+        const videoId = extractYouTubeId(video.video_url)
         if (videoId) {
             return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
         }
@@ -132,7 +140,8 @@ watch(currentPage, () => {
 })
 
 // Fetch on mount
-onMounted(() => {
+onMounted(async () => {
+    await fetchPlatforms()
     fetchVideos()
 })
 </script>
@@ -140,7 +149,7 @@ onMounted(() => {
 <template>
     <div class="min-h-screen bg-neutral-50">
         <!-- Hero Section -->
-        <section class="bg-gradient-to-br from-primary to-primary-dark py-20 px-4">
+        <section class="bg-linear-to-br from-primary to-primary-dark py-20 px-4">
             <div class="max-w-4xl mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
                     Galeri Video
@@ -163,11 +172,11 @@ onMounted(() => {
         <section class="py-8 bg-white border-b -mt-12 relative z-10">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex flex-col md:flex-row items-center justify-center gap-4">
-                    <!-- Category Filter -->
-                    <select v-model="selectedCategory" @change="handleCategoryChange"
+                    <!-- Platform Filter -->
+                    <select v-model="selectedPlatform" @change="handlePlatformChange"
                         class="px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
-                        <option v-for="cat in categories" :key="cat.value" :value="cat.value">
-                            {{ cat.label }}
+                        <option v-for="platform in platformOptions" :key="platform.value" :value="platform.value">
+                            {{ platform.label }}
                         </option>
                     </select>
                 </div>
@@ -218,10 +227,10 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <!-- Category Badge -->
-                            <div v-if="video.category"
+                            <!-- Platform Badge -->
+                            <div v-if="video.platform"
                                 class="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-semibold text-primary capitalize">
-                                {{ video.category }}
+                                {{ video.platform }}
                             </div>
                         </div>
 

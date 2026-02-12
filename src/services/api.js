@@ -95,8 +95,8 @@ export const getVideoById = async (id) => {
   return api.get(`/videos/${id}`);
 };
 
-export const getVideoCategories = async () => {
-  return api.get("/videos/categories");
+export const getVideoPlatforms = async () => {
+  return api.get("/videos/platforms");
 };
 
 // ==================== PHOTO GALLERIES ====================

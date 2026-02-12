@@ -91,8 +91,8 @@ This document tracks the connection between the Vue 3 frontend and the Express.j
 
 8. **GaleriVideo.vue** (Video Gallery)
    - API to connect: `GET /api/videos`
-   - Required params: `category`, `platform`, `search`, `page`, `limit`
-   - Methods available: `getVideos(params)`, `getVideoById(id)`, `getVideoCategories()`
+   - Required params: `platform`, `page`, `limit`
+   - Methods available: `getVideos(params)`, `getVideoById(id)`, `getVideoPlatform()`
    - Status: Stubbed, ready for connection
 
 ### 🔄 Profile Pages

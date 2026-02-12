@@ -140,6 +140,11 @@ const router = createRouter({
           name: "AdminPhotoAlbums",
           component: () => import("../admin/views/PhotoAlbumsList.vue"),
         },
+        {
+          path: "videos",
+          name: "AdminVideos",
+          component: () => import("../admin/views/VideosList.vue"),
+        },
       ],
     },
   ],
