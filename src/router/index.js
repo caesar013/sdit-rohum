@@ -145,6 +145,11 @@ const router = createRouter({
           name: "AdminVideos",
           component: () => import("../admin/views/VideosList.vue"),
         },
+        {
+          path: "contact",
+          name: "AdminContact",
+          component: () => import("../admin/views/ContactMessagesList.vue"),
+        },
       ],
     },
   ],
