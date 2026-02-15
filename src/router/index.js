@@ -155,6 +155,11 @@ const router = createRouter({
           name: "AdminComments",
           component: () => import("../admin/views/NewsCommentsList.vue"),
         },
+        {
+          path: "settings",
+          name: "AdminSettings",
+          component: () => import("../admin/views/SchoolSettings.vue"),
+        },
       ],
     },
   ],

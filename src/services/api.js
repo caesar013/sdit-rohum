@@ -60,6 +60,10 @@ export const getSchoolProfileByKey = async (key) => {
   return api.get(`/school-profile/${key}`);
 };
 
+export const getSchoolProfileKeys = async () => {
+  return api.get("/school-profile/keys");
+};
+
 // ==================== NEWS ====================
 export const getNews = async (params = {}) => {
   return api.get("/news", { params });

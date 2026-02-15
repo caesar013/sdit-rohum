@@ -106,6 +106,14 @@ export const updateSchoolProfile = async (key, data) => {
 };
 
 /**
+ * Update multiple school profile key-value pairs at once
+ * @param {Object} data - Object with key-value pairs to update
+ */
+export const updateSchoolProfileBulk = async (data) => {
+  return adminApi.put("/admin/school-profile", data);
+};
+
+/**
  * Delete school profile key-value
  * @param {string} key - Profile key
  */
