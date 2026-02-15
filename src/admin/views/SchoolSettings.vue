@@ -1,14 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { 
-    PencilIcon, 
-    CheckIcon, 
+import {
+    PencilIcon,
+    CheckIcon,
     XMarkIcon,
     PlusIcon,
     TrashIcon,
     CogIcon
 } from '@heroicons/vue/24/outline'
-import { getSchoolProfileKeys } from '@/services/api'
+import { getSchoolProfile } from '@/services/api'
 import { updateSchoolProfileBulk, createSchoolProfile, deleteSchoolProfile } from '@/services/adminApi'
 
 // State
@@ -22,24 +22,30 @@ const showAddModal = ref(false)
 // New key-value form
 const newKeyValue = ref({
     key: '',
-    value: ''
+    value: '',
+    type: 'text'
 })
+
+// Data types
+const dataTypes = [
+    { value: 'text', label: 'Teks Pendek' },
+    { value: 'longtext', label: 'Teks Panjang' },
+    { value: 'email', label: 'Email' },
+    { value: 'phone', label: 'Telepon' },
+    { value: 'url', label: 'URL' },
+    { value: 'image', label: 'Gambar/Logo' }
+]
 
 // Fetch all school profile settings
 const fetchSettings = async () => {
     isLoading.value = true
     try {
-        const response = await getSchoolProfileKeys()
-        
+        const response = await getSchoolProfile()
+
         if (response.success) {
-            // Convert array of {key, value} to object
-            const profileData = {}
-            response.data.forEach(item => {
-                profileData[item.key] = item.value
-            })
-            
-            settings.value = profileData
-            originalSettings.value = JSON.parse(JSON.stringify(profileData))
+            // response.data is already an object with key-value pairs
+            settings.value = response.data
+            originalSettings.value = JSON.parse(JSON.stringify(response.data))
         }
     } catch (error) {
         console.error('Error fetching settings:', error)
@@ -68,7 +74,7 @@ const saveSettings = async () => {
     isSaving.value = true
     try {
         await updateSchoolProfileBulk(settings.value)
-        
+
         originalSettings.value = JSON.parse(JSON.stringify(settings.value))
         alert('Pengaturan berhasil disimpan')
     } catch (error) {
@@ -92,7 +98,7 @@ const resetChanges = () => {
 
 // Add new key-value
 const handleAddKeyValue = async () => {
-    if (!newKeyValue.value.key.trim()|| !newKeyValue.value.value.trim()) {
+    if (!newKeyValue.value.key.trim() || !newKeyValue.value.value.trim()) {
         alert('Nama kunci dan nilai harus diisi')
         return
     }
@@ -114,7 +120,7 @@ const handleAddKeyValue = async () => {
         originalSettings.value[newKeyValue.value.key.trim()] = newKeyValue.value.value.trim()
 
         // Reset form and close modal
-        newKeyValue.value = { key: '', value: '' }
+        newKeyValue.value = { key: '', value: '', type: 'text' }
         showAddModal.value = false
 
         alert('Kunci berhasil ditambahkan')
@@ -132,11 +138,11 @@ const handleDeleteKey = async (key) => {
 
     try {
         await deleteSchoolProfile(key)
-        
+
         // Remove from local state
         delete settings.value[key]
         delete originalSettings.value[key]
-        
+
         alert('Kunci berhasil dihapus')
     } catch (error) {
         console.error('Error deleting key:', error)
@@ -163,6 +169,50 @@ const getInputType = (key) => {
 // Check if value is long text
 const isLongText = (value) => {
     return value && value.length > 100
+}
+
+// Check if value is an image URL
+const isImageUrl = (key, value) => {
+    if (!value) return false
+
+    // Check if key suggests it's an image
+    const imageKeywords = ['logo', 'image', 'img', 'photo', 'picture', 'banner', 'icon', 'avatar']
+    const keyLower = key.toLowerCase()
+    const hasImageKeyword = imageKeywords.some(keyword => keyLower.includes(keyword))
+
+    // Check if value looks like an image URL
+    const valueLower = value.toLowerCase()
+    const hasImageExtension = /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?.*)?$/i.test(valueLower)
+    const hasImagePath = valueLower.includes('/images/') || valueLower.includes('/uploads/') || valueLower.includes('/logos/')
+
+    return hasImageKeyword || hasImageExtension || hasImagePath
+}
+
+// Handle image file selection
+const handleImageUpload = async (key, event) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    // Validate image type
+    if (!file.type.startsWith('image/')) {
+        alert('File harus berupa gambar')
+        return
+    }
+
+    // For now, show a base64 preview
+    // In production, you should upload to server first
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        settings.value[key] = e.target.result
+    }
+    reader.readAsDataURL(file)
+
+    // TODO: Upload to server and get URL
+    // const formData = new FormData()
+    // formData.append('image', file)
+    // formData.append('key', key)
+    // const response = await uploadSchoolProfileImage(formData)
+    // settings.value[key] = response.data.url
 }
 
 onMounted(() => {
@@ -226,20 +276,47 @@ onMounted(() => {
                                 {{ formatKeyLabel(key) }}
                             </label>
                             <p class="text-xs text-gray-500 mb-2">Kunci: {{ key }}</p>
-                            
+
+                            <!-- Image preview and upload -->
+                            <div v-if="isImageUrl(key, value)">
+                                <div class="mb-3">
+                                    <img v-if="value" :src="value" :alt="key"
+                                        class="max-w-xs max-h-48 rounded-lg border border-gray-300 object-contain bg-gray-50"
+                                        @error="(e) => e.target.style.display = 'none'" />
+                                    <div v-else
+                                        class="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-gray-400 text-sm">No image</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <input v-model="settings[key]" type="url" placeholder="URL gambar"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
+                                    <div class="flex items-center gap-2">
+                                        <label
+                                            class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 cursor-pointer text-center text-sm">
+                                            <input type="file" accept="image/*" @change="handleImageUpload(key, $event)"
+                                                class="hidden" />
+                                            📁 Upload Gambar Baru
+                                        </label>
+                                    </div>
+                                    <p class="text-xs text-yellow-600">⚠️ Upload gambar akan disimpan sebagai base64.
+                                        Untuk produksi, gunakan server upload.</p>
+                                </div>
+                            </div>
+
                             <!-- Textarea for long text -->
-                            <textarea v-if="isLongText(value)" v-model="settings[key]" rows="4"
+                            <textarea v-else-if="isLongText(value)" v-model="settings[key]" rows="4"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                             </textarea>
-                            
+
                             <!-- Input for short text -->
                             <input v-else v-model="settings[key]" :type="getInputType(key)"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                         </div>
 
                         <!-- Delete Button -->
-                        <button @click="handleDeleteKey(key)"
-                            class="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="Hapus kunci">
+                        <button @click="handleDeleteKey(key)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                            title="Hapus kunci">
                             <TrashIcon class="w-5 h-5" />
                         </button>
                     </div>
@@ -282,8 +359,7 @@ onMounted(() => {
         </div>
 
         <!-- Add Key Modal -->
-        <div v-if="showAddModal" 
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div class="bg-white rounded-lg max-w-md w-full">
                 <!-- Modal Header -->
                 <div class="flex items-center justify-between p-6 border-b border-gray-200">
@@ -297,16 +373,34 @@ onMounted(() => {
                 <div class="p-6 space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nama Kunci</label>
-                        <input v-model="newKeyValue.key" type="text" placeholder="contoh: school_name"
+                        <input v-model="newKeyValue.key" type="text" placeholder="contoh: school_name, school_logo"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
-                        <p class="text-xs text-gray-500 mt-1">Gunakan huruf kecil dan underscore (_)</p>
+                        <p class="text-xs text-gray-500 mt-1">Gunakan huruf kecil dan underscore (_). Tambahkan '_logo'
+                            atau '_image' untuk gambar.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tipe Data</label>
+                        <select v-model="newKeyValue.type"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option v-for="type in dataTypes" :key="type.value" :value="type.value">
+                                {{ type.label }}
+                            </option>
+                        </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nilai</label>
-                        <textarea v-model="newKeyValue.value" rows="3" placeholder="Masukkan nilai"
+                        <textarea v-if="newKeyValue.type === 'longtext'" v-model="newKeyValue.value" rows="4"
+                            placeholder="Masukkan nilai"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                         </textarea>
+                        <input v-else v-model="newKeyValue.value"
+                            :type="newKeyValue.type === 'email' ? 'email' : newKeyValue.type === 'phone' ? 'tel' : newKeyValue.type === 'url' || newKeyValue.type === 'image' ? 'url' : 'text'"
+                            :placeholder="newKeyValue.type === 'image' ? 'https://example.com/logo.png' : 'Masukkan nilai'"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
+                        <p v-if="newKeyValue.type === 'image'" class="text-xs text-gray-500 mt-1">Masukkan URL gambar
+                            atau upload nanti setelah dibuat</p>
                     </div>
                 </div>
 
