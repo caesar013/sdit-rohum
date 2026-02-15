@@ -150,6 +150,11 @@ const router = createRouter({
           name: "AdminContact",
           component: () => import("../admin/views/ContactMessagesList.vue"),
         },
+        {
+          path: "comments",
+          name: "AdminComments",
+          component: () => import("../admin/views/NewsCommentsList.vue"),
+        },
       ],
     },
   ],

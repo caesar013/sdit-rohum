@@ -86,11 +86,11 @@ const fetchComments = async () => {
         if (response.success && response.data) {
             comments.value = response.data.map(comment => ({
                 id: comment.id,
-                name: comment.name,
-                email: comment.email,
+                name: comment.author_name,
+                email: comment.author_email,
                 comment: comment.comment,
                 date: formatDate(comment.created_at),
-                avatar: comment.name.charAt(0).toUpperCase()
+                avatar: comment.author_name.charAt(0).toUpperCase()
             }))
         }
     } catch (error) {
@@ -247,7 +247,7 @@ onMounted(() => {
 
                     <!-- Featured Image -->
                     <div class="relative w-full h-96 md:h-125 overflow-hidden">
-                        <img :src="article.image" :alt="article.title" @error="handleImageError"
+                        <img :src="article.featured_image" :alt="article.title" @error="handleImageError"
                             class="w-full h-full object-cover" />
                     </div>
 
