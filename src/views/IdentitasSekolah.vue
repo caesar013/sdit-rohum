@@ -1,101 +1,38 @@
-<script setup>
-import { ref, onMounted } from 'vue'
-import {
-    BuildingLibraryIcon,
-    ChevronDownIcon,
-    UserIcon,
-    MapPinIcon,
-    PhoneIcon,
-    EnvelopeIcon,
-    InformationCircleIcon,
-    MapIcon
-} from '@heroicons/vue/24/outline'
-import { getSchoolProfile } from '@/services/api'
+    <script setup>
+    import { ref, computed, watch, onMounted } from 'vue'
+    import {
+        BuildingLibraryIcon,
+        ChevronDownIcon,
+        UserIcon,
+        MapPinIcon,
+        PhoneIcon,
+        EnvelopeIcon,
+        InformationCircleIcon,
+        MapIcon
+    } from '@heroicons/vue/24/outline'
+    import { useSchoolProfile } from '@/services/schoolProfile'
 
-const isLoading = ref(false)
+    // Use cached school profile data
+    const { schoolProfile } = useSchoolProfile()
 
-// School identity data
-const schoolData = ref({
-    name: 'SD Negeri Kedungrejo',
-    npsn: '20403001',
-    principal: {
-        name: 'Sri Mardiyati, S.Pd.',
-        label: 'KEPALA SEKOLAH'
-    },
-    contact: {
-        phone: '082136781467',
-        fax: '-',
-        label: 'KONTAK'
-    },
-    email: {
-        email: 'info@sditrohmatulummah.sch.id',
-        website: 'https://sditrohmatulummah.sch.id',
-        label: 'EMAIL & WEBSITE'
-    },
-    address: {
-        label: 'ALAMAT LENGKAP',
-        street: 'Jl. Hastrodirono No.40',
-        village: 'Dusun Pulutan',
-        district: 'Kecematan Jekulo',
-        subdistrict: 'Kabupaten Kudus',
-        postalCode: 'Kode Pos: 59382',
-        city: 'Jawa Tengah',
-    },
-    additionalInfo: {
-        status: {
-            label: 'STATUS SEKOLAH',
-            value: 'Negeri'
-        },
-        accreditation: {
-            label: 'AKREDITASI',
-            value: 'A (Unggul)'
-        },
-        established: {
-            label: 'TAHUN BERDIRI',
-            value: '1960'
-        }
-    }
-})
-
-// Fetch school profile data from API
-const fetchSchoolProfile = async () => {
-    isLoading.value = true
-    try {
-        const response = await getSchoolProfile()
-
-        if (response.success && response.data) {
-            const profileData = {}
-            response.data.forEach(item => {
-                profileData[item.key] = item.value
-            })
-
-            // Map API data to component structure
-            if (profileData.school_name) schoolData.value.name = profileData.school_name
-            if (profileData.npsn) schoolData.value.npsn = profileData.npsn
-            if (profileData.principal_name) schoolData.value.principal.name = profileData.principal_name
-            if (profileData.phone) schoolData.value.contact.phone = profileData.phone
-            if (profileData.fax) schoolData.value.contact.fax = profileData.fax
-            if (profileData.email) schoolData.value.email.email = profileData.email
-            if (profileData.website) schoolData.value.email.website = profileData.website
-            if (profileData.address) schoolData.value.address.street = profileData.address
-            if (profileData.village) schoolData.value.address.village = profileData.village
-            if (profileData.district) schoolData.value.address.district = profileData.district
-            if (profileData.city) schoolData.value.address.city = profileData.city
-            if (profileData.postal_code) schoolData.value.address.postalCode = `Kode Pos: ${profileData.postal_code}`
-            if (profileData.accreditation) schoolData.value.additionalInfo.accreditation.value = profileData.accreditation
-            if (profileData.established_year) schoolData.value.additionalInfo.established.value = profileData.established_year
-        }
-    } catch (error) {
-        console.error('Error fetching school profile:', error)
-        // Keep default values on error
-    } finally {
-        isLoading.value = false
-    }
-}
-
-onMounted(() => {
-    fetchSchoolProfile()
-})
+    // Computed properties to format the data for display
+    const schoolName = computed(() => schoolProfile.value.school_name || 'SDIT Rohmatul Ummah')
+    const npsn = computed(() => schoolProfile.value.npsn || '-')
+    const principalName = computed(() => schoolProfile.value.principal_name || '-')
+    const phone = computed(() => schoolProfile.value.phone || '-')
+    const fax = computed(() => schoolProfile.value.fax || '-')
+    const email = computed(() => schoolProfile.value.email || '-')
+    const website = computed(() => schoolProfile.value.website || '#')
+    const address = computed(() => schoolProfile.value.address || '-')
+    const village = computed(() => schoolProfile.value.village || '-')
+    const district = computed(() => schoolProfile.value.district || '-')
+    const subdistrict = computed(() => schoolProfile.value.subdistrict || '-')
+    const city = computed(() => schoolProfile.value.city || '-')
+    const postalCode = computed(() => schoolProfile.value.postal_code ? `Kode Pos: ${schoolProfile.value.postal_code}` : '-')
+    const accreditation = computed(() => schoolProfile.value.accreditation || '-')
+    const establishedYear = computed(() => schoolProfile.value.established_year || '-')
+    const schoolStatus = computed(() => schoolProfile.value.school_status || 'Swasta')
+    const mapEmbedUrl = computed(() => schoolProfile.value.map_embed_url || '')
 </script>
 
 <template>
@@ -114,7 +51,7 @@ onMounted(() => {
                     Identitas Sekolah
                 </h1>
                 <p class="text-xl text-white/90">
-                    Profil lengkap SD Negeri Kedungrejo
+                    Profil lengkap {{ schoolName }}
                 </p>
 
                 <!-- Scroll Indicator -->
@@ -138,8 +75,8 @@ onMounted(() => {
                                 <BuildingLibraryIcon class="w-10 h-10" />
                             </div>
                             <div>
-                                <h2 class="text-3xl font-bold">{{ schoolData.name }}</h2>
-                                <p class="text-white/80">NPSN: {{ schoolData.npsn }}</p>
+                                <h2 class="text-3xl font-bold">{{ schoolName }}</h2>
+                                <p class="text-white/80">NPSN: {{ npsn }}</p>
                             </div>
                         </div>
                     </div>
@@ -154,9 +91,8 @@ onMounted(() => {
                                     <UserIcon class="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-primary uppercase mb-1">{{
-                                        schoolData.principal.label }}</p>
-                                    <p class="text-lg font-bold text-neutral-900">{{ schoolData.principal.name }}</p>
+                                    <p class="text-sm font-semibold text-primary uppercase mb-1">KEPALA SEKOLAH</p>
+                                    <p class="text-lg font-bold text-neutral-900">{{ principalName }}</p>
                                 </div>
                             </div>
 
@@ -167,14 +103,13 @@ onMounted(() => {
                                     <MapPinIcon class="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-primary uppercase mb-1">{{
-                                        schoolData.address.label }}</p>
-                                    <p class="text-neutral-700">{{ schoolData.address.street }}</p>
-                                    <p class="text-neutral-700">{{ schoolData.address.village }}</p>
-                                    <p class="text-neutral-700">{{ schoolData.address.district }}</p>
-                                    <p class="text-neutral-700">{{ schoolData.address.subdistrict }}</p>
-                                    <p class="text-neutral-700">{{ schoolData.address.city }}</p>
-                                    <p class="text-neutral-700 font-medium">{{ schoolData.address.postalCode }}</p>
+                                    <p class="text-sm font-semibold text-primary uppercase mb-1">ALAMAT LENGKAP</p>
+                                    <p class="text-neutral-700">{{ address }}</p>
+                                    <p class="text-neutral-700" v-if="village !== '-'">{{ village }}</p>
+                                    <p class="text-neutral-700" v-if="district !== '-'">{{ district }}</p>
+                                    <p class="text-neutral-700" v-if="subdistrict !== '-'">{{ subdistrict }}</p>
+                                    <p class="text-neutral-700">{{ city }}</p>
+                                    <p class="text-neutral-700 font-medium">{{ postalCode }}</p>
                                 </div>
                             </div>
 
@@ -185,10 +120,9 @@ onMounted(() => {
                                     <PhoneIcon class="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-primary uppercase mb-1">{{
-                                        schoolData.contact.label }}</p>
-                                    <p class="text-lg font-bold text-neutral-900">{{ schoolData.contact.phone }}</p>
-                                    <p class="text-neutral-600">Fax: {{ schoolData.contact.fax }}</p>
+                                    <p class="text-sm font-semibold text-primary uppercase mb-1">KONTAK</p>
+                                    <p class="text-lg font-bold text-neutral-900">{{ phone }}</p>
+                                    <p class="text-neutral-600" v-if="fax !== '-'">Fax: {{ fax }}</p>
                                 </div>
                             </div>
 
@@ -199,16 +133,15 @@ onMounted(() => {
                                     <EnvelopeIcon class="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-primary uppercase mb-1">{{
-                                        schoolData.email.label }}</p>
-                                    <p class="text-lg font-bold text-neutral-900 break-all">{{ schoolData.email.email }}
+                                    <p class="text-sm font-semibold text-primary uppercase mb-1">EMAIL & WEBSITE</p>
+                                    <p class="text-lg font-bold text-neutral-900 break-all">{{ email }}
                                     </p>
-                                    <a :href="schoolData.email.website" target="_blank"
+                                    <a v-if="website !== '#' && website !== '-'" :href="website" target="_blank"
                                         class="text-primary hover:text-primary-dark underline">
-                                        {{ schoolData.email.website }}
+                                        {{ website }}
                                     </a>
 
-                                    <a href="#"
+                                    <a v-if="mapEmbedUrl" :href="mapEmbedUrl" target="_blank"
                                         class="mt-3 inline-flex items-center text-primary hover:text-primary-dark font-semibold transition-colors">
                                         <MapIcon class="w-5 h-5 mr-2" />
                                         Lihat di Peta
@@ -228,30 +161,30 @@ onMounted(() => {
                                 <!-- Status -->
                                 <div class="bg-linear-to-br from-blue-50 to-blue-100 rounded-xl p-6">
                                     <p class="text-sm font-semibold text-blue-700 uppercase mb-2">
-                                        {{ schoolData.additionalInfo.status.label }}
+                                        STATUS SEKOLAH
                                     </p>
                                     <p class="text-2xl font-bold text-blue-900">
-                                        {{ schoolData.additionalInfo.status.value }}
+                                        {{ schoolStatus }}
                                     </p>
                                 </div>
 
                                 <!-- Accreditation -->
                                 <div class="bg-linear-to-br from-green-50 to-green-100 rounded-xl p-6">
                                     <p class="text-sm font-semibold text-green-700 uppercase mb-2">
-                                        {{ schoolData.additionalInfo.accreditation.label }}
+                                        AKREDITASI
                                     </p>
                                     <p class="text-2xl font-bold text-green-900">
-                                        {{ schoolData.additionalInfo.accreditation.value }}
+                                        {{ accreditation }}
                                     </p>
                                 </div>
 
                                 <!-- Year Established -->
                                 <div class="bg-linear-to-br from-amber-50 to-amber-100 rounded-xl p-6">
                                     <p class="text-sm font-semibold text-amber-700 uppercase mb-2">
-                                        {{ schoolData.additionalInfo.established.label }}
+                                        TAHUN BERDIRI
                                     </p>
                                     <p class="text-2xl font-bold text-amber-900">
-                                        {{ schoolData.additionalInfo.established.value }}
+                                        {{ establishedYear }}
                                     </p>
                                 </div>
                             </div>

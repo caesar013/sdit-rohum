@@ -37,25 +37,40 @@ export const loadSchoolProfile = async () => {
     // Fetch all profile data at once
     const response = await api.get("/school-profile");
 
-    if (response.data.success && Array.isArray(response.data.data)) {
-      // Iterate through all keys and populate the profile
-      response.data.data.forEach((item) => {
-        if (item.key && item.value) {
-          schoolProfile.value[item.key] = item.value;
-        }
-      });
+    if (response.success) {
+      // Check if data is an array (old format) or object (new format)
+      if (Array.isArray(response.data)) {
+        // Array format: [{key: 'school_name', value: 'SDIT...'}, ...]
+        response.data.forEach((item) => {
+          if (item.key && item.value) {
+            schoolProfile.value[item.key] = item.value;
+          }
+        });
+      } else if (typeof response.data === 'object' && response.data !== null) {
+        // Object format: {school_name: 'SDIT...', npsn: '...', ...}
+        Object.keys(response.data).forEach((key) => {
+          if (response.data[key] !== null && response.data[key] !== undefined) {
+            schoolProfile.value[key] = response.data[key];
+          }
+        });
+      }
 
       isLoaded.value = true;
       console.log("School profile loaded:", schoolProfile.value);
-    }
-  } catch (error) {
-    console.error("Error loading school profile:", error);
-  } finally {
-    isLoading.value = false;
+    } else {
+      console.error("API returned success: false", response);
   }
 
   return schoolProfile.value;
-};
+  }
+  catch (error) {
+    console.error("Error loading school profile:", error);
+    throw error;
+  }
+  finally {
+    isLoading.value = false;
+  }
+}
 
 /**
  * Get cached school profile data (load if not already loaded)
