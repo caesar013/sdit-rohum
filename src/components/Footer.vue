@@ -1,21 +1,24 @@
 <script setup>
+import { computed } from 'vue'
 import { useSchoolProfile } from '@/services/schoolProfile'
 
 const { schoolProfile } = useSchoolProfile()
 
 const quickLinks = [
-  { name: 'Tentang Kami', href: '#tentang' },
-  { name: 'Program', href: '#program' },
-  { name: 'Berita', href: '#berita' },
-  { name: 'Galeri', href: '#galeri' },
-  { name: 'Kontak', href: '#kontak' },
+  { name: 'Tentang Kami', href: '/identitas-sekolah' },
+  { name: 'Visi & Misi', href: '/visi-misi' },
+  { name: 'Berita', href: '/berita' },
+  { name: 'Galeri Foto', href: '/galeri-foto' },
+  { name: 'Hubungi Kami', href: '/hubungi-kami' },
 ]
 
-const contactInfo = [
-  { label: 'Telepon', value: '082136781467' },
-  { label: 'Email', value: 'info@sditrohmatulummah.sch.id' },
-  { label: 'Alamat', value: 'Jl. Hastrodirono No.40, Pulutan, Kec. Jekulo, Kab. Kudus, Jawa Tengah 59382, Indonesia' },
-]
+const contactInfo = computed(() => [
+  { label: 'Telepon', value: schoolProfile.value.phone || '-' },
+  { label: 'Email', value: schoolProfile.value.email || '-' },
+  { label: 'Alamat', value: schoolProfile.value.address || '-' },
+])
+
+const schoolVision = computed(() => schoolProfile.value.vision || 'Beriman, Kreatif, Berprestasi, Berkarakter, dan Berbudaya. Membentuk generasi unggul dengan pendidikan berkualitas.')
 </script>
 
 <template>
@@ -26,8 +29,7 @@ const contactInfo = [
         <div>
           <h3 class="text-2xl font-bold text-secondary mb-4">{{ schoolProfile.school_name }}</h3>
           <p class="text-neutral-300">
-            Beriman, Kreatif, Berprestasi, Berkarakter, dan Berbudaya. Membentuk generasi unggul dengan pendidikan
-            berkualitas.
+            {{ schoolVision }}
           </p>
         </div>
 
@@ -36,9 +38,9 @@ const contactInfo = [
           <h4 class="text-lg font-semibold mb-4">Tautan Cepat</h4>
           <ul class="space-y-2">
             <li v-for="link in quickLinks" :key="link.name">
-              <a :href="link.href" class="text-neutral-300 hover:text-secondary transition-colors duration-200">
+              <router-link :to="link.href" class="text-neutral-300 hover:text-secondary transition-colors duration-200">
                 {{ link.name }}
-              </a>
+              </router-link>
             </li>
           </ul>
         </div>
