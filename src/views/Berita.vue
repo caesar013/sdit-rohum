@@ -92,11 +92,6 @@ const pageNumbers = computed(() => {
     return pages
 })
 
-// Handle image error
-const handleImageError = (event) => {
-    event.target.src = 'https://via.placeholder.com/400x250/0d5f5f/ffffff?text=Berita+Sekolah'
-}
-
 // Format date from API
 const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -160,7 +155,6 @@ onMounted(() => {
                         <!-- Image -->
                         <div class="relative overflow-hidden h-48">
                             <img :src="news.featured_image || '/placeholder-news.jpg'" :alt="news.title"
-                                @error="handleImageError"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
 
                             <!-- Date Badge -->

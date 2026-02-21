@@ -251,9 +251,7 @@ const closeModal = () => {
     selectedTeacher.value = null
 }
 
-const handleImageError = (event) => {
-    event.target.src = 'https://via.placeholder.com/200/0d5f5f/ffffff?text=GTK'
-}
+
 
 // Watch for page changes
 watch(currentPage, () => {
@@ -356,10 +354,9 @@ onMounted(() => {
                             <div class="flex justify-center -mt-20 mb-4 relative z-10">
                                 <div
                                     class="w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
-                                    <img :src="teacher.photo_url"
-                                        :alt="teacher.name" @error="handleImageError"
+                                    <img :src="teacher.photo_url" :alt="teacher.name"
                                         class="w-full h-full object-cover" />
-                                        {{console.log(teacher.photo_url) ? 'yes' : 'no'}}
+                                    {{ console.log(teacher.photo_url) ? 'yes' : 'no' }}
                                 </div>
                             </div>
 
@@ -444,8 +441,7 @@ onMounted(() => {
                             <!-- Small Circular Photo -->
                             <div
                                 class="w-20 h-20 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white shrink-0">
-                                <img :src="selectedTeacher.photo_url"
-                                    :alt="selectedTeacher.name" @error="handleImageError"
+                                <img :src="selectedTeacher.photo_url" :alt="selectedTeacher.name"
                                     class="w-full h-full object-cover" />
                             </div>
 
@@ -476,28 +472,28 @@ onMounted(() => {
                                     <div class="flex justify-between items-center py-3 border-b border-neutral-100">
                                         <span class="text-neutral-600 font-medium">NIP</span>
                                         <span class="text-neutral-900 font-semibold">{{ selectedTeacher.nip || '-'
-                                            }}</span>
+                                        }}</span>
                                     </div>
 
                                     <!-- Subject -->
                                     <div class="flex justify-between items-center py-3 border-b border-neutral-100">
                                         <span class="text-neutral-600 font-medium">Mata Pelajaran</span>
                                         <span class="text-neutral-900 font-semibold">{{ selectedTeacher.subject || '-'
-                                            }}</span>
+                                        }}</span>
                                     </div>
 
                                     <!-- Jenis Kelamin -->
                                     <div class="flex justify-between items-center py-3 border-b border-neutral-100">
                                         <span class="text-neutral-600 font-medium">Jenis Kelamin</span>
                                         <span class="text-neutral-900 font-semibold">{{ selectedTeacher.gender || '-'
-                                            }}</span>
+                                        }}</span>
                                     </div>
 
                                     <!-- Status -->
                                     <div class="flex justify-between items-center py-3">
                                         <span class="text-neutral-600 font-medium">Status</span>
                                         <span class="text-green-600 font-bold">{{ getStatusLabel(selectedTeacher.status)
-                                        }}</span>
+                                            }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -507,8 +503,7 @@ onMounted(() => {
                                 <div class="relative">
                                     <div
                                         class="aspect-3/4 rounded-2xl overflow-hidden shadow-xl border-4 border-primary/20">
-                                        <img :src="selectedTeacher.photo_url"
-                                            :alt="selectedTeacher.name" @error="handleImageError"
+                                        <img :src="selectedTeacher.photo_url" :alt="selectedTeacher.name"
                                             class="w-full h-full object-cover" />
                                     </div>
                                     <!-- Status Badge Below Photo -->

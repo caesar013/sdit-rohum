@@ -101,9 +101,7 @@ const handleVideoClick = (video) => {
     }
 }
 
-const handleImageError = (event) => {
-    event.target.src = 'https://via.placeholder.com/640x360/0d5f5f/ffffff?text=Video+Kegiatan'
-}
+
 
 const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -215,7 +213,7 @@ onMounted(async () => {
                         class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group">
                         <!-- Video Thumbnail -->
                         <div class="relative overflow-hidden aspect-video bg-black">
-                            <img :src="getVideoThumbnail(video)" :alt="video.title" @error="handleImageError"
+                            <img :src="getVideoThumbnail(video)" :alt="video.title"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 
                             <!-- Play Button Overlay -->

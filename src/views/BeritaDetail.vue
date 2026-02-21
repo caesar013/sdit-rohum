@@ -164,9 +164,7 @@ const shareArticle = (platform) => {
     }
 }
 
-const handleImageError = (event) => {
-    event.target.src = 'https://via.placeholder.com/1200x600/0d5f5f/ffffff?text=Berita+Sekolah'
-}
+
 
 const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -247,8 +245,7 @@ onMounted(() => {
 
                     <!-- Featured Image -->
                     <div class="relative w-full h-96 md:h-125 overflow-hidden">
-                        <img :src="article.featured_image" :alt="article.title" @error="handleImageError"
-                            class="w-full h-full object-cover" />
+                        <img :src="article.featured_image" :alt="article.title" class="w-full h-full object-cover" />
                     </div>
 
                     <!-- Article Body -->
@@ -359,7 +356,7 @@ onMounted(() => {
                             class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer">
                             <!-- Image -->
                             <div class="relative overflow-hidden h-48">
-                                <img :src="news.image" :alt="news.title" @error="handleImageError"
+                                <img :src="news.image" :alt="news.title"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                             </div>
 

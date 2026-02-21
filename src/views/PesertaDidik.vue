@@ -82,9 +82,7 @@ const handleSearch = () => {
     fetchStudents()
 }
 
-const handleImageError = (event) => {
-    event.target.src = 'https://via.placeholder.com/200x250/0d5f5f/ffffff?text=Foto+Siswa'
-}
+
 
 // Fetch academic years on mount
 onMounted(() => {
@@ -162,8 +160,7 @@ onMounted(() => {
                         class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
                         <!-- Student Photo -->
                         <div class="relative overflow-hidden bg-linear-to-br from-primary/10 to-primary/5">
-                            <img :src="student.photo" :alt="student.name" @error="handleImageError"
-                                class="w-full h-64 object-cover object-top" />
+                            <img :src="student.photo" :alt="student.name" class="w-full h-64 object-cover object-top" />
                         </div>
 
                         <!-- Student Info -->

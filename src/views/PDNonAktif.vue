@@ -275,9 +275,7 @@ const resetContactForm = () => {
     }
 }
 
-const handleImageError = (event) => {
-    event.target.src = 'https://via.placeholder.com/200x250/dc2626/ffffff?text=Alumni'
-}
+
 
 // Fetch data on mount
 onMounted(() => {
@@ -371,8 +369,7 @@ onMounted(() => {
                             <!-- Alumni Photo -->
                             <div class="shrink-0">
                                 <div class="w-32 h-40 rounded-xl overflow-hidden shadow-md bg-red-600">
-                                    <img :src="alumni.photo" :alt="alumni.name" @error="handleImageError"
-                                        class="w-full h-full object-cover" />
+                                    <img :src="alumni.photo" :alt="alumni.name" class="w-full h-full object-cover" />
                                 </div>
                             </div>
 

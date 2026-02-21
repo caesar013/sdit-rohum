@@ -111,11 +111,6 @@ const previousPhoto = () => {
     }
 }
 
-const handleImageError = (event) => {
-    // Use a simple SVG placeholder instead of external URL
-    event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iIzBkNWY1ZiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5Gb3RvIFRpZGFrIFRlcnNlZGlhPC90ZXh0Pjwvc3ZnPg=='
-}
-
 const formatDate = (dateString) => {
     const date = new Date(dateString)
     const options = { day: '2-digit', month: 'long', year: 'numeric' }
@@ -188,7 +183,7 @@ onMounted(() => {
                         <!-- Album Cover with Overlay -->
                         <div class="relative overflow-hidden aspect-video">
                             <img :src="album.cover_photo || album.coverImage" :alt="album.title"
-                                @error="handleImageError" class="w-full h-full object-cover" />
+                                @click="openLightbox(album, photoIndex)" class="w-full h-full object-cover" />
 
                             <!-- Hover Overlay -->
                             <div
@@ -287,7 +282,7 @@ onMounted(() => {
                             <!-- Photo -->
                             <div class="relative bg-black">
                                 <img :src="selectedAlbum.photos[currentPhotoIndex].photo_url || selectedAlbum.photos[currentPhotoIndex].url"
-                                    :alt="selectedAlbum.photos[currentPhotoIndex].caption" @error="handleImageError"
+                                    :alt="selectedAlbum.photos[currentPhotoIndex].caption"
                                     class="w-full h-auto max-h-[70vh] object-contain" />
                             </div>
 
