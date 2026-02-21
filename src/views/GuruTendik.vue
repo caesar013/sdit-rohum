@@ -356,7 +356,6 @@ onMounted(() => {
                                     class="w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
                                     <img :src="teacher.photo_url" :alt="teacher.name"
                                         class="w-full h-full object-cover" />
-                                    {{ console.log(teacher.photo_url) ? 'yes' : 'no' }}
                                 </div>
                             </div>
 
